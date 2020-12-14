@@ -2,10 +2,12 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
 from laspy.file import File
+from PIL import ImageTk, Image
 import numpy as np
 import matplotlib.pyplot as plt
 import time
 import plot
+
 
 # initialise window
 root = Tk()
@@ -33,18 +35,18 @@ def main():
     # icon = PhotoImage(file="icon.png")
     # Label(root, image=icon, background="white").grid(row=2, column=1, sticky=N)
 
-    # main control panel at the top of the form
-    top_panel = LabelFrame(root)
-    top_panel.rowconfigure(0, weight=1)
-    top_panel.columnconfigure(0, weight=1)
-    top_panel.grid(row=0, column=0, columnspan=2, sticky=N + W + E)
+    # main frame containing output images
+    image_panel = LabelFrame(root)
+    image_panel.grid(row=1, column=1, rowspan=2, sticky=E, padx=10, pady=5)
 
-    # main frame containing ou
+    img = ImageTk.PhotoImage(Image.open("icon.png"))
+    img_display = Label(image_panel, image=img)
+    img_display.grid(row=0, column=1, sticky=N + W + E + S, padx=10, pady=5)
     # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
-    file_frame = LabelFrame(top_panel, text="user input/ output")
+    file_frame = LabelFrame(root, text="user input/ output")
     file_frame.rowconfigure(0, weight=1)
     file_frame.columnconfigure(0, weight=1)
-    file_frame.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=10)
+    file_frame.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=5)
 
     # button to select input file
     input_btn = Button(
@@ -73,10 +75,8 @@ def main():
     output_lbl.grid(row=1, column=1, rowspan=3, sticky=E, padx=5, pady=5)
 
     # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
-    options_frame = LabelFrame(top_panel, text="image options")
-    options_frame.rowconfigure(0, weight=1)
-    options_frame.columnconfigure(0, weight=1)
-    options_frame.grid(row=0, column=2, sticky=E, padx=10, pady=10)
+    options_frame = LabelFrame(root, text="image options")
+    options_frame.grid(row=1, column=0, sticky=W + E + S, padx=10, pady=5)
 
     dpi_label = Label(options_frame, text="DPI")
     dpi_label.grid(row=3, column=0, sticky=W + E, padx=5, pady=5)
@@ -93,9 +93,7 @@ def main():
     # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
     # frame to contain/ group user controls
     control_frame = LabelFrame(root, text="output controls")
-    control_frame.rowconfigure(0, weight=1)
-    control_frame.columnconfigure(0, weight=1)
-    control_frame.grid(row=2, column=0, sticky=W + S, padx=10, pady=10)
+    control_frame.grid(row=2, column=0, sticky=W + E + S, padx=10, pady=5)
 
     # output generation settings (1/0)
     plot_chk = Checkbutton(
@@ -130,9 +128,9 @@ def main():
         background="dodgerblue",
         foreground="white",
         padx=10,
-        pady=10,
+        pady=5,
     )
-    begin_btn.grid(row=2, column=1, sticky=SE, padx=10, pady=10)
+    begin_btn.grid(row=2, column=1, sticky=SE, padx=10, pady=5)
 
     # run main window
     root.mainloop()
