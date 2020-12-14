@@ -11,75 +11,98 @@ root = Tk()
 
 # -----GUI text variables-----
 source_var = StringVar()
-source_var.set("select source...")
+
 destination_var = StringVar()
-destination_var.set("select destination...")
+
 plot_var = IntVar()
 plot_var.set(1)
+
+contour_var = IntVar()
+contour_var.set(1)
+
 
 # window settings
 root.title("LASplot")
 root.resizable(0, 0)
-root.configure(background="black")
+root.configure(background="white")
 
 
 def main():
 
-    # button to select input file
-    input_btn = Button(
-        root,
-        text="INPUT FILE/S",
-        command=choose_source,
-        background="black",
-        foreground="white",
-    )
-
-    input_btn.grid(row=0, column=0, sticky=W)
-
-    # label to display chosen file
-    Label(root, textvariable=source_var, background="black", foreground="white").grid(
-        row=0, column=0, sticky=E
-    )
-
-    # destination input config
-    Button(
-        root,
-        text="DESTINATION",
-        command=choose_dest,
-        background="black",
-        foreground="white",
-    ).grid(row=1, column=0, sticky=W)
-
-    # label to display chosen destination
-    Label(
-        root, textvariable=destination_var, background="black", foreground="white"
-    ).grid(row=1, column=0, sticky=E)
-
     # configure background image
     icon = PhotoImage(file="icon.png")
-    Label(root, image=icon, background="black").grid(row=2, column=0, sticky=N)
+    Label(root, image=icon, background="white").grid(row=2, column=1, sticky=N)
+
+    # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
+    file_frame = LabelFrame(root, text="output controls")
+    file_frame.grid(row=0, column=0, columnspan=2, sticky=NSEW, padx=10, pady=10)
+
+    # button to select input file
+    input_btn = Button(
+        file_frame,
+        text="INPUT FILE/S",
+        command=choose_source,
+        foreground="black",
+    )
+    input_btn.grid(row=0, column=0, sticky=W, padx=5, pady=5)
+
+    # button to select output destination
+    output_btn = Button(
+        file_frame,
+        text="DESTINATION",
+        command=choose_dest,
+        foreground="black",
+    )
+    output_btn.grid(row=1, column=0, sticky=W, padx=5, pady=5)
+
+    # label to display chosen file
+    input_lbl = Label(file_frame, textvariable=source_var)
+    input_lbl.grid(row=0, column=1, sticky=E)
+
+    # label to display chosen destination
+    output_lbl = Label(file_frame, textvariable=destination_var)
+    output_lbl.grid(row=1, column=1, sticky=E)
+
+    # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
+    # frame to contain/ group user controls
+    control_frame = LabelFrame(root, text="output controls")
+    control_frame.grid(row=2, column=0, sticky=NW, padx=10, pady=10)
 
     # output generation settings (1/0)
-    Checkbutton(
-        root,
+    plot_chk = Checkbutton(
+        control_frame,
         text="Layer seperated plot",
-        background="black",
-        foreground="white",
         variable=plot_var,
-    ).grid(row=2, column=0, sticky=NW)
+    )
+    plot_chk.grid(row=0, column=0, sticky=NW)
 
+    # output generation settings (1/0)
+    contour_chk = Checkbutton(
+        control_frame,
+        text="Groud contour",
+        variable=contour_var,
+    )
+    contour_chk.grid(row=1, column=0, sticky=NW)
+
+    # output generation settings (1/0)
+    composite_chk = Checkbutton(
+        control_frame,
+        text="Composite image",
+        variable=contour_var,
+    )
+    composite_chk.grid(row=2, column=0, sticky=NW)
+
+    # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
     # GO button config
     begin_btn = Button(
         root,
         text="BEGIN",
         command=handler,
-        background="deepskyblue",
-        foreground="black",
         padx=10,
         pady=10,
     )
+    begin_btn.grid(row=2, column=1, sticky=SE)
 
-    begin_btn.grid(row=2, column=0, sticky=SE)
     # run main window
     root.mainloop()
 
@@ -89,14 +112,9 @@ def choose_source():
     path = filedialog.askopenfilename(
         title="Select one or more .LAS files", filetypes=(("las Files", "*.las"),)
     )
+
     if path != "":
         source_var.set(path)
-        if (
-            source_var.get() != "select source..."
-            and destination_var.get() != "select destination..."
-        ):
-            begin_btn["state"] = NORMAL
-            root.update()
 
 
 # allows user to define desired output for the files
@@ -112,10 +130,7 @@ def get_xy(in_points, classification):
 
 
 def handler():
-    if (
-        source_var.get() != "select source..."
-        and destination_var.get() != "select destination..."
-    ):
+    if source_var.get() != "" and destination_var.get() != "":
         plot()
     else:
         print("please select correct input values")
@@ -151,6 +166,10 @@ def plot():
     plt.rcParams["figure.figsize"] = [size, size]
     plt.rcParams["figure.facecolor"] = "black"
 
+    print("")
+    print("CLASSIFICATION PLOT")
+    print("-----------------------------------------")
+
     const_args = dpi, x_min, x_max, y_min, y_max
 
     # save the individual layer plots as .PNG
@@ -161,6 +180,9 @@ def plot():
     save(*highVeg, "/highVeg.png", "DarkGreen", *const_args)
     save(*buildings, "/buildings.png", "White", *const_args)
     save(*water, "/water.png", "DodgerBlue", *const_args)
+
+    print("-----------------------------------------")
+    print("process complete")
 
 
 # save the plotted images
@@ -179,6 +201,7 @@ def save(x_, y_, filename_, color_, dpi, x_min, x_max, y_min, y_max):
         facecolor="black",
     )
     plt.clf()
+    print(filename_, "saved successfully")
 
 
 def print_header_info(input_file, point_records, las_specification):
