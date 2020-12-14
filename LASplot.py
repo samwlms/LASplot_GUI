@@ -34,7 +34,9 @@ def handler():
                 if the_file.endswith("png"):
                     img_path = destination_var.get() + "/" + the_file
                     print("img_path: ", img_path)
-                    images.append(ImageTk.PhotoImage(Image.open(img_path)))
+                    images.append(
+                        ImageTk.PhotoImage(Image.open(img_path).resize((800, 800)))
+                    )
             img_display.configure(image=images[0])
             img_display.update()
         if contour_var.get() == 1:
@@ -60,12 +62,13 @@ composite_var = IntVar()
 
 # window settings
 root.title("LASplot")
-root.geometry("1920x1080")
+root.geometry("1100x950")
 root.minsize(800, 400)
-root.rowconfigure(0, weight=1, minsize=120)
-root.columnconfigure(0, weight=1, minsize=250)
+root.rowconfigure(0, weight=0, minsize=120)
+root.columnconfigure(0, weight=0, minsize=250)
+root.rowconfigure(1, weight=0)
+root.columnconfigure(1, weight=1)
 
-img_var = ImageTk.PhotoImage(Image.open("icon.png"))
 # a list of images that exist in the ouptu directory after plot
 images = []
 
@@ -73,20 +76,20 @@ images = []
 # ------------------------- GUI FRAMES (TOP, LEFT, IMG) -------------------------
 # the top level panel (input/ output files)
 top = LabelFrame(root, text="user input/ output")
-top.rowconfigure(0, weight=1, minsize=40)
+top.rowconfigure(0, weight=5, minsize=40)
 top.columnconfigure(0, weight=1)
 top.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=5)
 
 left = LabelFrame(root, text="options")
 left.rowconfigure(0, weight=1)
 left.columnconfigure(0, weight=1)
-left.grid(row=1, column=0, sticky=N + W + S, padx=10, pady=5)
+left.grid(row=1, column=0, sticky=W + N, padx=10, pady=5)
 
 img = LabelFrame(root)
-img.grid(row=1, column=1, sticky=N + W + E + S, padx=10, pady=5)
+img.grid(row=1, column=1, sticky=S + N + W + E, padx=10, pady=5)
 
-img_display = Label(img, image=img_var)
-img_display.grid(row=0, column=1, sticky=N + W + E + S, padx=10, pady=5)
+img_display = Label(img)
+img_display.grid(row=0, column=1, sticky=S + N + W + E, padx=10, pady=5)
 
 # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
 
