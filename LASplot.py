@@ -6,41 +6,42 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-# -----initialise window-----
+# initialise window
 root = Tk()
 
-# -----GUI text variables-----
+# input/ output variables
 source_var = StringVar()
-
 destination_var = StringVar()
 
+# checkbox variables
 plot_var = IntVar()
-plot_var.set(1)
-
 contour_var = IntVar()
-contour_var.set(1)
-
+composite_var = IntVar()
 
 # window settings
 root.title("LASplot")
-root.resizable(0, 0)
-root.configure(background="white")
+root.geometry("900x500")
+root.minsize(500, 350)
+root.rowconfigure(0, weight=1)
+root.columnconfigure(0, weight=1)
 
 
 def main():
 
     # configure background image
-    icon = PhotoImage(file="icon.png")
-    Label(root, image=icon, background="white").grid(row=2, column=1, sticky=N)
+    # icon = PhotoImage(file="icon.png")
+    # Label(root, image=icon, background="white").grid(row=2, column=1, sticky=N)
 
     # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
-    file_frame = LabelFrame(root, text="output controls")
-    file_frame.grid(row=0, column=0, columnspan=2, sticky=NSEW, padx=10, pady=10)
+    file_frame = LabelFrame(root, text="user input/ output")
+    file_frame.rowconfigure(0, weight=1)
+    file_frame.columnconfigure(0, weight=1)
+    file_frame.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=10)
 
     # button to select input file
     input_btn = Button(
         file_frame,
-        text="INPUT FILE/S",
+        text="Select file",
         command=choose_source,
         foreground="black",
     )
@@ -49,7 +50,7 @@ def main():
     # button to select output destination
     output_btn = Button(
         file_frame,
-        text="DESTINATION",
+        text="Output dir",
         command=choose_dest,
         foreground="black",
     )
@@ -63,10 +64,30 @@ def main():
     output_lbl = Label(file_frame, textvariable=destination_var)
     output_lbl.grid(row=1, column=1, sticky=E)
 
+    # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
+    options_frame = LabelFrame(root, text="image options")
+    options_frame.rowconfigure(0, weight=1)
+    options_frame.columnconfigure(0, weight=1)
+    options_frame.grid(row=3, column=0, sticky=W + S, padx=10, pady=10)
+
+    dpi_label = Label(options_frame, text="DPI")
+    dpi_label.grid(row=3, column=0, sticky=W + E, padx=10, pady=10)
+
+    dpi_input = Entry(options_frame)
+    dpi_input.grid(row=3, column=1, sticky=W + E, padx=10, pady=10)
+
+    size_label = Label(options_frame, text="SIZE")
+    size_label.grid(row=4, column=0, sticky=W + E, padx=10, pady=10)
+
+    size_label = Entry(options_frame)
+    size_label.grid(row=4, column=1, sticky=W + E, padx=10, pady=10)
+
     # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
     # frame to contain/ group user controls
     control_frame = LabelFrame(root, text="output controls")
-    control_frame.grid(row=2, column=0, sticky=NW, padx=10, pady=10)
+    control_frame.rowconfigure(0, weight=1)
+    control_frame.columnconfigure(0, weight=1)
+    control_frame.grid(row=2, column=0, sticky=W + S, padx=10, pady=10)
 
     # output generation settings (1/0)
     plot_chk = Checkbutton(
@@ -88,7 +109,7 @@ def main():
     composite_chk = Checkbutton(
         control_frame,
         text="Composite image",
-        variable=contour_var,
+        variable=composite_var,
     )
     composite_chk.grid(row=2, column=0, sticky=NW)
 
@@ -98,10 +119,12 @@ def main():
         root,
         text="BEGIN",
         command=handler,
+        background="dodgerblue",
+        foreground="white",
         padx=10,
         pady=10,
     )
-    begin_btn.grid(row=2, column=1, sticky=SE)
+    begin_btn.grid(row=1, column=1, sticky=SE, padx=10, pady=10)
 
     # run main window
     root.mainloop()
@@ -129,9 +152,19 @@ def get_xy(in_points, classification):
     return x, y
 
 
-def handler():
+def valid_inputs():
     if source_var.get() != "" and destination_var.get() != "":
-        plot()
+        return True
+
+
+def handler():
+    if valid_inputs():
+        if plot_var.get() == 1:
+            plot()
+        if contour_var.get() == 1:
+            print("do contour stuff....")
+        if composite_var.get() == 1:
+            print("do composite stuff....")
     else:
         print("please select correct input values")
 
@@ -205,16 +238,11 @@ def save(x_, y_, filename_, color_, dpi, x_min, x_max, y_min, y_max):
 
 
 def print_header_info(input_file, point_records, las_specification):
-    print(
-        "---------------------------------HEADER INFORMATION--------------------------------"
-    )
+    print("---------------------------HEADER INFORMATION--------------------------")
     print("LAS specification = " + input_file.header.version)
     print("point format = " + str(las_specification))
     print("total point count = " + str(input_file.header.count))
-    print("sample point array = " + str(point_records[0][0]))
-    print(
-        "-----------------------------------------------------------------------------------"
-    )
+    print("-----------------------------------------------------------------------")
 
 
 if __name__ == "__main__":
