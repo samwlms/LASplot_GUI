@@ -5,7 +5,6 @@ from laspy.file import File
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-import threading
 
 # -----initialise window-----
 root = Tk()
@@ -18,23 +17,30 @@ destination_var.set("select destination...")
 plot_var = IntVar()
 plot_var.set(1)
 
+# window settings
+root.title("LASplot")
+root.resizable(0, 0)
+root.configure(background="black")
+
 
 def main():
-    # window settings
-    root.title("LASplot")
-    root.resizable(0, 0)
-    root.configure(background="black")
-    # source input config
-    Button(
+
+    # button to select input file
+    input_btn = Button(
         root,
         text="INPUT FILE/S",
         command=choose_source,
         background="black",
         foreground="white",
-    ).grid(row=0, column=0, sticky=W)
+    )
+
+    input_btn.grid(row=0, column=0, sticky=W)
+
+    # label to display chosen file
     Label(root, textvariable=source_var, background="black", foreground="white").grid(
         row=0, column=0, sticky=E
     )
+
     # destination input config
     Button(
         root,
@@ -43,14 +49,17 @@ def main():
         background="black",
         foreground="white",
     ).grid(row=1, column=0, sticky=W)
+
+    # label to display chosen destination
     Label(
         root, textvariable=destination_var, background="black", foreground="white"
     ).grid(row=1, column=0, sticky=E)
+
     # configure background image
     icon = PhotoImage(file="icon.png")
     Label(root, image=icon, background="black").grid(row=2, column=0, sticky=N)
+
     # output generation settings (1/0)
-    # var1 = ttk.IntVar()
     Checkbutton(
         root,
         text="Layer seperated plot",
@@ -60,28 +69,37 @@ def main():
     ).grid(row=2, column=0, sticky=NW)
 
     # GO button config
-    Button(
+    begin_btn = Button(
         root,
         text="BEGIN",
-        command=plot,
+        command=handler,
         background="deepskyblue",
         foreground="black",
         padx=10,
         pady=10,
-    ).grid(row=2, column=0, sticky=SE)
+    )
 
+    begin_btn.grid(row=2, column=0, sticky=SE)
     # run main window
     root.mainloop()
 
 
+# allows user to select a las file input
 def choose_source():
-    source_var.set(
-        filedialog.askopenfilename(
-            title="Select one or more .LAS files", filetypes=(("las Files", "*.las"),)
-        )
+    path = filedialog.askopenfilename(
+        title="Select one or more .LAS files", filetypes=(("las Files", "*.las"),)
     )
+    if path != "":
+        source_var.set(path)
+        if (
+            source_var.get() != "select source..."
+            and destination_var.get() != "select destination..."
+        ):
+            begin_btn["state"] = NORMAL
+            root.update()
 
 
+# allows user to define desired output for the files
 def choose_dest():
     destination_var.set(filedialog.askdirectory())
 
@@ -91,6 +109,16 @@ def get_xy(in_points, classification):
     x = in_points.X[in_points.Classification == classification]
     y = in_points.Y[in_points.Classification == classification]
     return x, y
+
+
+def handler():
+    if (
+        source_var.get() != "select source..."
+        and destination_var.get() != "select destination..."
+    ):
+        plot()
+    else:
+        print("please select correct input values")
 
 
 # plot the positional data and then save as PNG
@@ -135,6 +163,7 @@ def plot():
     save(*water, "/water.png", "DodgerBlue", *const_args)
 
 
+# save the plotted images
 def save(x_, y_, filename_, color_, dpi, x_min, x_max, y_min, y_max):
     plt.plot(x_, y_, color=color_, linestyle="none", marker=",")
     plt.xlim(x_min, x_max)
