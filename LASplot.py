@@ -23,10 +23,10 @@ composite_var = IntVar()
 
 # window settings
 root.title("LASplot")
-root.geometry("900x500")
-root.minsize(700, 400)
-root.rowconfigure(0, weight=1)
-root.columnconfigure(0, weight=1)
+root.geometry("1920x1080")
+root.minsize(800, 400)
+root.rowconfigure(0, weight=1, minsize=120)
+root.columnconfigure(0, weight=1, minsize=250)
 
 
 def main():
@@ -35,22 +35,29 @@ def main():
     # icon = PhotoImage(file="icon.png")
     # Label(root, image=icon, background="white").grid(row=2, column=1, sticky=N)
 
-    # main frame containing output images
-    image_panel = LabelFrame(root)
-    image_panel.grid(row=1, column=1, rowspan=2, sticky=E, padx=10, pady=5)
+    # ------------------------- GUI FRAMES (TOP, LEFT, IMG) -------------------------
+    # the top level panel (input/ output files)
+    top = LabelFrame(root, text="user input/ output")
+    top.rowconfigure(0, weight=1, minsize=40)
+    top.columnconfigure(0, weight=1)
+    top.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=5)
 
-    img = ImageTk.PhotoImage(Image.open("icon.png"))
-    img_display = Label(image_panel, image=img)
+    left = LabelFrame(root, text="options")
+    left.rowconfigure(0, weight=1)
+    left.columnconfigure(0, weight=1)
+    left.grid(row=1, column=0, sticky=N + W + S, padx=10, pady=5)
+
+    img = LabelFrame(root)
+    img.grid(row=1, column=1, sticky=N + W + E + S, padx=10, pady=5)
+
+    img_var = ImageTk.PhotoImage(Image.open("icon.png"))
+    img_display = Label(img, image=img_var)
     img_display.grid(row=0, column=1, sticky=N + W + E + S, padx=10, pady=5)
     # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
-    file_frame = LabelFrame(root, text="user input/ output")
-    file_frame.rowconfigure(0, weight=1)
-    file_frame.columnconfigure(0, weight=1)
-    file_frame.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=5)
 
     # button to select input file
     input_btn = Button(
-        file_frame,
+        top,
         text="Select file",
         command=choose_source,
         foreground="black",
@@ -59,7 +66,7 @@ def main():
 
     # button to select output destination
     output_btn = Button(
-        file_frame,
+        top,
         text="Output dir",
         command=choose_dest,
         foreground="black",
@@ -67,16 +74,16 @@ def main():
     output_btn.grid(row=1, column=0, sticky=W, padx=5, pady=5)
 
     # label to display chosen file
-    input_lbl = Label(file_frame, textvariable=source_var)
+    input_lbl = Label(top, textvariable=source_var)
     input_lbl.grid(row=0, column=1, sticky=E, padx=5, pady=5)
 
     # label to display chosen destination
-    output_lbl = Label(file_frame, textvariable=destination_var)
-    output_lbl.grid(row=1, column=1, rowspan=3, sticky=E, padx=5, pady=5)
+    output_lbl = Label(top, textvariable=destination_var)
+    output_lbl.grid(row=1, column=1, sticky=E, padx=5, pady=5)
 
     # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
-    options_frame = LabelFrame(root, text="image options")
-    options_frame.grid(row=1, column=0, sticky=W + E + S, padx=10, pady=5)
+    options_frame = LabelFrame(left, text="image options")
+    options_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
     dpi_label = Label(options_frame, text="DPI")
     dpi_label.grid(row=3, column=0, sticky=W + E, padx=5, pady=5)
@@ -92,13 +99,13 @@ def main():
 
     # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
     # frame to contain/ group user controls
-    control_frame = LabelFrame(root, text="output controls")
-    control_frame.grid(row=2, column=0, sticky=W + E + S, padx=10, pady=5)
+    control_frame = LabelFrame(left, text="output controls")
+    control_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
     # output generation settings (1/0)
     plot_chk = Checkbutton(
         control_frame,
-        text="Layer seperated plot",
+        text="Individual classification layers",
         variable=plot_var,
     )
     plot_chk.grid(row=0, column=0, sticky=NW)
@@ -122,7 +129,7 @@ def main():
     # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
     # GO button config
     begin_btn = Button(
-        root,
+        left,
         text="BEGIN",
         command=handler,
         background="dodgerblue",
@@ -130,7 +137,7 @@ def main():
         padx=10,
         pady=5,
     )
-    begin_btn.grid(row=2, column=1, sticky=SE, padx=10, pady=5)
+    begin_btn.grid(row=2, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
     # run main window
     root.mainloop()
