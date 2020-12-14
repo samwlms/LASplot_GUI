@@ -35,7 +35,7 @@ def main():
     #.world file generation settings (1/0)
     Checkbutton(root, text="Generate '.world' context files",  background = "black", foreground="white").grid(row = 2, column = 0, sticky = NW)
     #GO button config
-    Button(root, text="BEGIN", command= (threading.Thread(target=plot).start), background = "deepskyblue", foreground="black", padx=10, pady=10).grid(row = 2, column = 0, sticky = SE)
+    Button(root, text="BEGIN", command= plot, background = "deepskyblue", foreground="black", padx=10, pady=10).grid(row = 2, column = 0, sticky = SE)
     
     #run main window
     root.mainloop()
@@ -46,107 +46,82 @@ def choose_source():
 def choose_dest():    
     destination_var.set(filedialog.askdirectory())
 
-def print_header(file_input): #Print basic header information to the terminal
-    point_records = file_input.points
-    fmat = file_input.point_format.fmt
+# get the positional data of points in a specified classification
+def get_xy(in_points, classification):
+    x = in_points.X[in_points.Classification == classification]
+    y = in_points.Y[in_points.Classification == classification]
+    return x, y
 
-    print('--------------------------HEADER INFORMATION-------------------------')
-    print('LAS specification = ' + file_input.header.version)
-    print('point format = ' + str(fmat))
-    print('total point count = ' + str(file_input.header.count))
-    print('sample point array = ' + str(point_records[0]))
-    print("---------------------------------------------------------------------")
+# plot the positional data and then save as PNG
+def plot():
+    size = 100
+    dpi = 20
 
-def classification_index(file_input):
-    las_format = file_input.point_format.fmt
-    if las_format == '1':
-        return 5
-    elif las_format == '6':
-        return 6
-    else:
-        messagebox.showerror(title="POINT FORMAT ERROR", message="ERROR: unrecognised point format.")
+    # read in LAS file and specify point records, las spec
+    input_file = File(source_var.get(), mode="r")
+    point_records = input_file.points
+    las_specification = input_file.point_format.fmt
 
-def save_figure(x_,y_,filename_,color_):
-    # plot ground points
-    plt.rcParams["figure.figsize"] = [50, 50]
-    plt.rcParams['figure.facecolor'] = 'black'
-    plt.plot(x_,y_, color= color_, linestyle='none', marker='.')
-    plt.margins(0,0)
-    plt.autoscale(enable=True, axis='both', tight=None)
-    plt.gca().set_axis_off()
+    # get the min/max X,Y values to normalise the plot scale
+    x_min, x_max = np.amin(input_file.X), np.amax(input_file.X)
+    y_min, y_max = np.amin(input_file.Y), np.amax(input_file.Y)
+
+    # print output of derived header information
+    print_header_info(input_file, point_records, las_specification)
+
+    # initialise point-variable arrays
+    buildings = get_xy(input_file, 6)
+    unclassified = get_xy(input_file, 1)
+    ground = get_xy(input_file, 2)
+    lowVeg = get_xy(input_file, 3)
+    medVeg = get_xy(input_file, 4)
+    highVeg = get_xy(input_file, 5)
+    water = get_xy(input_file, 9)
+
+    # basic params for the plot function
+    plt.rcParams["figure.figsize"] = [size, size]
+    plt.rcParams["figure.facecolor"] = "black"
+
+    const_args = dpi, x_min, x_max, y_min, y_max
+
+    # save the individual layer plots as .PNG
+    save(*unclassified, "/unclassified.png", "m", *const_args)
+    save(*ground, "/ground.png", "SaddleBrown", *const_args)
+    save(*lowVeg, "/lowVeg.png", "LimeGreen", *const_args)
+    save(*medVeg, "/mediumVeg.png", "Green", *const_args)
+    save(*highVeg, "/highVeg.png", "DarkGreen", *const_args)
+    save(*buildings, "/buildings.png", "White", *const_args)
+    save(*water, "/water.png", "DodgerBlue", *const_args)
+
+
+def save(x_, y_, filename_, color_, dpi, x_min, x_max, y_min, y_max):
+    plt.plot(x_, y_, color=color_, linestyle="none", marker=",")
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+    plt.margins(0, 0)
+    plt.gca().set_facecolor("black")
     fig = plt.gcf()
-    fig.savefig(destination_var.get() + filename_, dpi=50, bbox_inches = 'tight', pad_inches = 0, facecolor=fig.get_facecolor())
+    fig.savefig(
+        destination_var.get() + filename_,
+        dpi=dpi,
+        bbox_inches="tight",
+        pad_inches=0,
+        facecolor="black",
+    )
     plt.clf()
 
-def plot(): 
-    input_LAS = File(source_var.get(), mode='r')
-    c_index = classification_index(input_LAS)
-    print_header(input_LAS)
-    point_records = np.array(input_LAS.points)
-    
-    #progress bar config
-    progress_bar = ttk.Progressbar(root, orient=HORIZONTAL, length=630, mode="determinate", maximum=input_LAS.header.count / 10000)
-    progress_bar.grid(row = 2, column = 0, sticky = SW)
-    root.update()
+def print_header_info(input_file, point_records, las_specification):
+    print(
+        "---------------------------------HEADER INFORMATION--------------------------------"
+    )
+    print("LAS specification = " + input_file.header.version)
+    print("point format = " + str(las_specification))
+    print("total point count = " + str(input_file.header.count))
+    print("sample point array = " + str(point_records[0][0]))
+    print(
+        "-----------------------------------------------------------------------------------"
+    )
 
-    #-----Point Classifications-----
-    #unclassified
-    unclassified_x = []
-    unclassified_y = []
-    #ground
-    ground_x = []
-    ground_y = []
-    #low veg
-    lowVeg_x = []
-    lowVeg_y = []
-    #med veg
-    medVeg_x = []
-    medVeg_y = []
-    #high veg
-    highVeg_x = []
-    highVeg_y = []
-    #buildings
-    buildings_x = []
-    buildings_y = []
-    #water
-    water_x = []
-    water_y = [] 
-
-    #loop through point records and seperate by classification
-    for count, record in enumerate(point_records):
-        if record[0][c_index] == 2:
-            ground_x.append(record[0][0])
-            ground_y.append(record[0][1])
-        elif record[0][c_index] == 1:
-            unclassified_x.append(record[0][0])
-            unclassified_y.append(record[0][1])
-        elif record[0][c_index] == 3:
-            lowVeg_x.append(record[0][0])
-            lowVeg_y.append(record[0][1])
-        elif record[0][c_index] == 4:
-            medVeg_x.append(record[0][0])
-            medVeg_y.append(record[0][1])          
-        elif record[0][c_index] == 5:
-            highVeg_x.append(record[0][0])
-            highVeg_y.append(record[0][1])       
-        elif record[0][c_index] == 6:
-            buildings_x.append(record[0][0])
-            buildings_y.append(record[0][1])         
-        elif record[0][c_index] == 9:
-            water_x.append(record[0][0])
-            water_y.append(record[0][1])            
-        
-        if count % 10000 == 0:
-            progress_bar['value'] += 1
-            root.update_idletasks() 
-
-    save_figure(unclassified_x,unclassified_y, '/unclassified.png', 'm')
-    save_figure(ground_x,ground_y, '/ground.png', 'SaddleBrown')
-    save_figure(lowVeg_x,lowVeg_y, '/lowVeg.png', 'LimeGreen')
-    save_figure(medVeg_x,medVeg_y, '/mediumVeg.png', 'Green')
-    save_figure(highVeg_x,highVeg_y, '/highVeg.png', 'DarkGreen')
-    save_figure(buildings_x,buildings_y, '/buildings.png', 'White')
-    save_figure(water_x,water_y, '/water.png', 'DodgerBlue')
 
 if __name__ == "__main__":
     main()
