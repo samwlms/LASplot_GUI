@@ -7,50 +7,91 @@ import matplotlib.pyplot as plt
 import time
 import threading
 
-#-----initialise window-----
+# -----initialise window-----
 root = Tk()
 
-#-----GUI text variables-----
+# -----GUI text variables-----
 source_var = StringVar()
 source_var.set("select source...")
 destination_var = StringVar()
 destination_var.set("select destination...")
+plot_var = IntVar()
+plot_var.set(1)
 
 
 def main():
-        
-    #window settings
+    # window settings
     root.title("LASplot")
-    root.resizable(0,0)
+    root.resizable(0, 0)
     root.configure(background="black")
-    #source input config
-    Button(root, text="INPUT FILE/S", command= choose_source, background = "black", foreground="white").grid(row = 0, column = 0, sticky = W)
-    Label(root, textvariable=source_var, background = "black", foreground="white").grid(row=0,column=0,sticky=E)
-    #destination input config
-    Button(root, text="DESTINATION", command= choose_dest, background = "black", foreground="white").grid(row = 1, column = 0, sticky = W)
-    Label(root, textvariable=destination_var, background = "black", foreground="white").grid(row=1,column=0,sticky=E)
-    #configure background image
+    # source input config
+    Button(
+        root,
+        text="INPUT FILE/S",
+        command=choose_source,
+        background="black",
+        foreground="white",
+    ).grid(row=0, column=0, sticky=W)
+    Label(root, textvariable=source_var, background="black", foreground="white").grid(
+        row=0, column=0, sticky=E
+    )
+    # destination input config
+    Button(
+        root,
+        text="DESTINATION",
+        command=choose_dest,
+        background="black",
+        foreground="white",
+    ).grid(row=1, column=0, sticky=W)
+    Label(
+        root, textvariable=destination_var, background="black", foreground="white"
+    ).grid(row=1, column=0, sticky=E)
+    # configure background image
     icon = PhotoImage(file="icon.png")
-    Label(root, image = icon, background = "black").grid(row = 2, column = 0, sticky = N)
-    #.world file generation settings (1/0)
-    Checkbutton(root, text="Generate '.world' context files",  background = "black", foreground="white").grid(row = 2, column = 0, sticky = NW)
-    #GO button config
-    Button(root, text="BEGIN", command= plot, background = "deepskyblue", foreground="black", padx=10, pady=10).grid(row = 2, column = 0, sticky = SE)
-    
-    #run main window
+    Label(root, image=icon, background="black").grid(row=2, column=0, sticky=N)
+    # output generation settings (1/0)
+    # var1 = ttk.IntVar()
+    Checkbutton(
+        root,
+        text="Layer seperated plot",
+        background="black",
+        foreground="white",
+        variable=plot_var,
+    ).grid(row=2, column=0, sticky=NW)
+
+    # GO button config
+    Button(
+        root,
+        text="BEGIN",
+        command=plot,
+        background="deepskyblue",
+        foreground="black",
+        padx=10,
+        pady=10,
+    ).grid(row=2, column=0, sticky=SE)
+
+    # run main window
     root.mainloop()
 
-def choose_source():
-    source_var.set(filedialog.askopenfilename(title = "Select one or more .LAS files" ,filetypes = (("las Files", "*.las"),)))
 
-def choose_dest():    
+def choose_source():
+    source_var.set(
+        filedialog.askopenfilename(
+            title="Select one or more .LAS files", filetypes=(("las Files", "*.las"),)
+        )
+    )
+
+
+def choose_dest():
     destination_var.set(filedialog.askdirectory())
+
 
 # get the positional data of points in a specified classification
 def get_xy(in_points, classification):
     x = in_points.X[in_points.Classification == classification]
     y = in_points.Y[in_points.Classification == classification]
     return x, y
+
 
 # plot the positional data and then save as PNG
 def plot():
@@ -109,6 +150,7 @@ def save(x_, y_, filename_, color_, dpi, x_min, x_max, y_min, y_max):
         facecolor="black",
     )
     plt.clf()
+
 
 def print_header_info(input_file, point_records, las_specification):
     print(
