@@ -31,15 +31,16 @@ def valid_inputs():
     dpi_bool = dpi_var.get().isnumeric()
     size_bool = size_var.get().isnumeric()
 
-    if all(s_bool, d_bool, dpi_bool, size_bool):
+    if all([s_bool, d_bool, dpi_bool, size_bool]):
         return True
 
 
 def handler():
     if valid_inputs():
-
         # delete existing filenames in the listbox
         file_box.delete(0, END)
+        # delete existing images in image list
+        images.clear()
 
         # if 'layer' option is selected
         if plot_var.get() == 1:
@@ -53,7 +54,6 @@ def handler():
             for the_file in os.listdir(destination_var.get()):
 
                 if the_file.endswith("png"):
-
                     # make a list of 'PIL photoImage' objects
                     img_path = destination_var.get() + "/" + the_file
                     img = Image.open(img_path).resize((1000, 1000))
