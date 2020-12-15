@@ -35,7 +35,7 @@ def handler():
                     img_path = destination_var.get() + "/" + the_file
                     print("img_path: ", img_path)
                     images.append(
-                        ImageTk.PhotoImage(Image.open(img_path).resize((800, 800)))
+                        ImageTk.PhotoImage(Image.open(img_path).resize((1000, 1000)))
                     )
             img_display.configure(image=images[0])
             img_display.update()
@@ -89,7 +89,8 @@ img = LabelFrame(root)
 img.grid(row=1, column=1, sticky=S + N + W + E, padx=10, pady=5)
 
 img_display = Label(img)
-img_display.grid(row=0, column=1, sticky=S + N + W + E, padx=10, pady=5)
+img_display.pack(fill="both", expand=True)
+# grid(row=0, column=1, sticky=S + N + W + E, padx=10, pady=5)
 
 # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
 
