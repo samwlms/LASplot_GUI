@@ -92,7 +92,7 @@ destination_var = StringVar()
 # image settings variables
 dpi_var = StringVar()
 size_var = StringVar()
-dpi_var.set("50")
+dpi_var.set("25")
 size_var.set("100")
 
 # checkbox variables
