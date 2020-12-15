@@ -1,3 +1,3 @@
 __pycache__/
 *.py[cod]
-.yaml
+.pre-commit-config.yaml
