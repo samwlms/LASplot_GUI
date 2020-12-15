@@ -25,7 +25,7 @@ def upper_z(input_file, divisions, layer):
     # to determine the upper bound of that specifc band
     z = input_file.Z[input_file.Classification == 2]
     z_delta = np.amax(z) - np.amin(z)
-    return np.amin(z) + ((z_delta / divisions) * layer)
+    return int(np.amin(z) + ((z_delta / divisions) * layer))
 
 
 def get_band(input_file, divisions, layer):
@@ -33,12 +33,22 @@ def get_band(input_file, divisions, layer):
     valid_c = input_file.Classification == 2
     valid_upper = input_file.Z < upper_bound
     if layer == 1:
-        mask = np.logical_and(valid_c, valid_upper)
+        all_valid = np.logical_and(valid_c, valid_upper)
     else:
         lower_bound = upper_z(input_file, divisions, (layer - 1))
         valid_lower = input_file.Z > lower_bound
-        mask = np.logical_and(valid_c, valid_upper, valid_lower)
-    return input_file.X[mask], input_file.Y[mask]
+        valid_bounds = np.logical_and(valid_upper, valid_lower)
+        all_valid = np.logical_and(valid_c, valid_bounds)
+
+        print("input_file.Z:", input_file.Z)
+        print("lower_bound", lower_bound)
+        print("upper_bound", upper_bound)
+        print("valid_c:", valid_c)
+        print("valid_upper:", valid_upper)
+        print("valid_lower:", valid_lower)
+        print("all_valid:", all_valid)
+        print("")
+    return input_file.X[all_valid], input_file.Y[all_valid]
 
 
 # plot the positional data and then save as PNG
@@ -75,16 +85,16 @@ def contour(input, output, size, dpi):
     print("CONTOUR PLOT")
     print("-----------------------------------------")
 
-    plt.plot(*points_1, color=(0.0, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_2, color=(0.1, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_3, color=(0.2, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_4, color=(0.3, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_5, color=(0.4, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_6, color=(0.5, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_7, color=(0.6, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_8, color=(0.7, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_9, color=(0.8, 0.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*points_10, color=(0.9, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_1, color=(1.0, 1.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_2, color=(0.8, 1.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_3, color=(0.6, 1.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_4, color=(0.4, 1.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_5, color=(0.2, 1.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_6, color=(0.0, 0.8, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_7, color=(0.0, 0.6, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_8, color=(0.0, 0.4, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_9, color=(0.0, 0.2, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_10, color=(0.0, 0.0, 1.0), linestyle="none", marker=",")
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     plt.margins(0, 0)
