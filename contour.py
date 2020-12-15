@@ -39,15 +39,6 @@ def get_band(input_file, divisions, layer):
         valid_lower = input_file.Z > lower_bound
         valid_bounds = np.logical_and(valid_upper, valid_lower)
         all_valid = np.logical_and(valid_c, valid_bounds)
-
-        print("input_file.Z:", input_file.Z)
-        print("lower_bound", lower_bound)
-        print("upper_bound", upper_bound)
-        print("valid_c:", valid_c)
-        print("valid_upper:", valid_upper)
-        print("valid_lower:", valid_lower)
-        print("all_valid:", all_valid)
-        print("")
     return input_file.X[all_valid], input_file.Y[all_valid]
 
 
