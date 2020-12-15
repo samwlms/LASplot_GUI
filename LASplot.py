@@ -23,8 +23,9 @@ def choose_dest():
 
 
 def valid_inputs():
-    if source_var.get() != "" and destination_var.get() != "" and dpi_var.get().isnumeric() and size_var.get().isnumeric():
-        return True
+    if source_var.get() != "" and destination_var.get() != "":
+        if dpi_var.get().isnumeric() and size_var.get().isnumeric():
+            return True
 
 
 def handler():
