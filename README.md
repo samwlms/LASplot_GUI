@@ -1,5 +1,5 @@
 ![app icon](https://github.com/samwlms/LASplot_GUI/blob/main/icon.png)
-## LASplot - *Fast LIDAR visualisation and QA*
+## LASplot - *LIDAR visualisation and analysis toolset*
 
 Python based GUI which utilises the Tkinter framework for application development.
 
