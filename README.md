@@ -6,18 +6,18 @@
 
 ![app icon](https://github.com/samwlms/LASplot_GUI/blob/main/images/contour.png)
 
-## >**Point classification seperation and plot:**
+>## **Point classification seperation and plot:**
 - [x] Quickly visualise 1 file *(Normal output + QA Mode)*
 - [ ] For n files: plot
 
 ![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_plot.PNG)
 
-## >**Ground layer terrain analysis:**
+>## **Ground layer terrain analysis:**
 - [x] Colour banding to indicate changes in ground elevation
 
 ![contour image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_contour.PNG)
 
-## >**Laspy tools integration:**
+>## **Laspy tools integration:**
 - [ ] Compress/ Decompress data (LAS <-> LAZ)
 - [ ] Validate
 
