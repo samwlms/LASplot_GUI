@@ -38,15 +38,14 @@ def contour(input, output, size, dpi):
     plt.rcParams["figure.facecolor"] = "black"
 
     mid_z = middle_z(input_file)
-    ground_points = input_file.Classification == 2
 
     # bool masks for the input points that meet our conditions
-    low_mask = np.logical_and(ground_points, input_file.Z < mid_z)
-    high_mask = np.logical_and(ground_points, input_file.Z > mid_z)
+    l_mask = np.logical_and(input_file.Classification == 2, input_file.Z < mid_z)
+    h_mask = np.logical_and(input_file.Classification == 2, input_file.Z > mid_z)
 
     # the points from the input file which match our masks
-    low_points = input_file.points[low_mask]
-    high_points = input_file.points[high_mask]
+    low_points = input_file.X[l_mask], input_file.Y[l_mask]
+    high_points = input_file.X[h_mask], input_file.Y[h_mask]
 
     print(low_points)
     print(high_points)
@@ -55,21 +54,22 @@ def contour(input, output, size, dpi):
     print("CONTOUR PLOT")
     print("-----------------------------------------")
 
-    """ plt.plot(x_, y_, color=color_, linestyle="none", marker=",")
+    plt.plot(*low_points, color="DodgerBlue", linestyle="none", marker=",")
+    plt.plot(*high_points, color="LimeGreen", linestyle="none", marker=",")
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     plt.margins(0, 0)
     plt.gca().set_facecolor("black")
     fig = plt.gcf()
     fig.savefig(
-        output + filename_,
+        output + "/contour.png",
         dpi=dpi,
         bbox_inches="tight",
         pad_inches=0,
         facecolor="black",
     )
     plt.clf()
-    print(filename_, "saved successfully")
- """
+    print("contour.png saved successfully")
+
     print("-----------------------------------------")
     print("process complete")
