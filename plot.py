@@ -22,9 +22,6 @@ def plot(input, output, size, dpi):
     x_min, x_max = np.amin(input_file.X), np.amax(input_file.X)
     y_min, y_max = np.amin(input_file.Y), np.amax(input_file.Y)
 
-    # print output of derived header information
-    print_header_info(input_file, point_records, las_specification)
-
     # initialise point-variable arrays
     buildings = get_xy(input_file, 6)
     unclassified = get_xy(input_file, 1)
@@ -45,20 +42,20 @@ def plot(input, output, size, dpi):
     const_args = output, dpi, x_min, x_max, y_min, y_max
 
     # save the individual layer plots as .PNG
-    save(*unclassified, "/unclassified.png", "m", *const_args)
-    save(*ground, "/ground.png", "SaddleBrown", *const_args)
-    save(*lowVeg, "/lowVeg.png", "LimeGreen", *const_args)
-    save(*medVeg, "/mediumVeg.png", "Green", *const_args)
-    save(*highVeg, "/highVeg.png", "DarkGreen", *const_args)
-    save(*buildings, "/buildings.png", "White", *const_args)
-    save(*water, "/water.png", "DodgerBlue", *const_args)
+    save_plot(*unclassified, "/unclassified.png", "m", *const_args)
+    save_plot(*ground, "/ground.png", "SaddleBrown", *const_args)
+    save_plot(*lowVeg, "/lowVeg.png", "LimeGreen", *const_args)
+    save_plot(*medVeg, "/mediumVeg.png", "Green", *const_args)
+    save_plot(*highVeg, "/highVeg.png", "DarkGreen", *const_args)
+    save_plot(*buildings, "/buildings.png", "White", *const_args)
+    save_plot(*water, "/water.png", "DodgerBlue", *const_args)
 
     print("-----------------------------------------")
     print("process complete")
 
 
 # save the plotted images
-def save(x_, y_, filename_, color_, output, dpi, x_min, x_max, y_min, y_max):
+def save_plot(x_, y_, filename_, color_, output, dpi, x_min, x_max, y_min, y_max):
     plt.plot(x_, y_, color=color_, linestyle="none", marker=",")
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
@@ -74,11 +71,3 @@ def save(x_, y_, filename_, color_, output, dpi, x_min, x_max, y_min, y_max):
     )
     plt.clf()
     print(filename_, "saved successfully")
-
-
-def print_header_info(input_file, point_records, las_specification):
-    print("---------------------------HEADER INFORMATION--------------------------")
-    print("LAS specification = " + input_file.header.version)
-    print("point format = " + str(las_specification))
-    print("total point count = " + str(input_file.header.count))
-    print("-----------------------------------------------------------------------")
