@@ -1,3 +1,7 @@
+# Written by: Sam Williams
+# Contact: Swilliams9@uon.edu.au
+# Project is open for use/ collaboration by all!
+
 from laspy.file import File
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,8 +11,6 @@ import matplotlib.pyplot as plt
 def get_xy(in_points, classification):
     x = in_points.X[in_points.Classification == classification]
     y = in_points.Y[in_points.Classification == classification]
-    z = in_points.Z[in_points.Classification == classification]
-    z_delta = np.amax(z) - np.amin(z)
     return x, y
 
 
@@ -29,16 +31,27 @@ def upper_z(input_file, divisions, layer):
 
 
 def get_band(input_file, divisions, layer):
+    # the derived upper bound for the given depth band
     upper_bound = upper_z(input_file, divisions, layer)
+    # boolean mask representing all ground points in file
     valid_c = input_file.Classification == 2
+    # boolean mask representing all points below the upper bound
     valid_upper = input_file.Z < upper_bound
+
     if layer == 1:
+        # boolean mask which represents all points in the band
         all_valid = np.logical_and(valid_c, valid_upper)
     else:
+        # determine the lower bound for the given band
         lower_bound = upper_z(input_file, divisions, (layer - 1))
+        # boolean mask representing all points above the lower bound
         valid_lower = input_file.Z > lower_bound
+        # boolean mask representing all points within the bounds (all)
         valid_bounds = np.logical_and(valid_upper, valid_lower)
+        # boolean mask which represents all points in the band (ground)
         all_valid = np.logical_and(valid_c, valid_bounds)
+
+    # return the X, Y coords for all valid points in the band
     return input_file.X[all_valid], input_file.Y[all_valid]
 
 
@@ -76,6 +89,7 @@ def contour(input, output, size, dpi):
     print("CONTOUR PLOT")
     print("-----------------------------------------")
 
+    # plot the individual bands sequentially
     plt.plot(*points_1, color=(1.0, 1.0, 1.0), linestyle="none", marker=",")
     plt.plot(*points_2, color=(0.8, 1.0, 1.0), linestyle="none", marker=",")
     plt.plot(*points_3, color=(0.6, 1.0, 1.0), linestyle="none", marker=",")
@@ -86,11 +100,17 @@ def contour(input, output, size, dpi):
     plt.plot(*points_8, color=(0.0, 0.4, 1.0), linestyle="none", marker=",")
     plt.plot(*points_9, color=(0.0, 0.2, 1.0), linestyle="none", marker=",")
     plt.plot(*points_10, color=(0.0, 0.0, 1.0), linestyle="none", marker=",")
+
+    # ensure the image is not distorted by using known file min/max
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
+
+    # various output settings
     plt.margins(0, 0)
     plt.gca().set_facecolor("black")
     fig = plt.gcf()
+
+    # save the image to a given output
     fig.savefig(
         output + "/contour.png",
         dpi=dpi,
@@ -98,8 +118,9 @@ def contour(input, output, size, dpi):
         pad_inches=0,
         facecolor="black",
     )
+    # clear the image from meory
     plt.clf()
-    print("contour.png saved successfully")
 
+    print("contour.png saved successfully")
     print("-----------------------------------------")
     print("process complete")

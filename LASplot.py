@@ -1,3 +1,7 @@
+# Written by: Sam Williams
+# Contact: Swilliams9@uon.edu.au
+# Project is open for use/ collaboration by all!
+
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
