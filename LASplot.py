@@ -3,6 +3,7 @@ from tkinter import filedialog
 from tkinter import ttk
 from PIL import ImageTk, Image
 import plot
+import printer
 import os
 
 
@@ -43,6 +44,8 @@ def handler():
             print("do contour stuff....")
         if composite_var.get() == 1:
             print("do composite stuff....")
+        if print_var.get() == 1:
+            printer.test(source_var.get())
 
     else:
         print("please select correct input values")
@@ -59,6 +62,7 @@ destination_var = StringVar()
 plot_var = IntVar()
 contour_var = IntVar()
 composite_var = IntVar()
+print_var = IntVar()
 
 # window settings
 root.title("LASplot")
@@ -166,6 +170,13 @@ composite_chk = Checkbutton(
     variable=composite_var,
 )
 composite_chk.grid(row=2, column=0, sticky=NW)
+
+print_chk = Checkbutton(
+    control_frame,
+    text="Print file info to console",
+    variable=print_var,
+)
+print_chk.grid(row=3, column=0, sticky=NW)
 
 # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
 # GO button config
