@@ -25,7 +25,7 @@ All data processing is also handled with Python (using Laspy + Numpy to manipula
 - [ ] Validate
 
 
-![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/screenshot_plot.png)
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/screenshot_plot.PNG)
 
 
 **Custom output settings for image files**
@@ -37,7 +37,7 @@ Individually manange:
 - 'DPI' *the granular detail of the output image*
 
 
-![controls image](https://github.com/samwlms/LASplot_GUI/blob/main/screenshot_settings.png)
+![controls image](https://github.com/samwlms/LASplot_GUI/blob/main/screenshot_settings.PNG)
 
 
 ## Python powered data handling
