@@ -82,7 +82,3 @@ def print_header_info(input_file, point_records, las_specification):
     print("point format = " + str(las_specification))
     print("total point count = " + str(input_file.header.count))
     print("-----------------------------------------------------------------------")
-
-
-if __name__ == "__main__":
-    main()
