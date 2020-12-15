@@ -19,6 +19,28 @@ def middle_z(input_file):
     return np.amin(z) + (z_delta / 2)
 
 
+def upper_z(input_file, divisions, layer):
+    # function that returns the upper Z bound of a colour band.
+    # this function takes a given number of bands (divisions), a band number (layer)
+    # to determine the upper bound of that specifc band
+    z = input_file.Z[input_file.Classification == 2]
+    z_delta = np.amax(z) - np.amin(z)
+    return np.amin(z) + ((z_delta / divisions) * layer)
+
+
+def get_band(input_file, divisions, layer):
+    upper_bound = upper_z(input_file, divisions, layer)
+    valid_c = input_file.Classification == 2
+    valid_upper = input_file.Z < upper_bound
+    if layer == 1:
+        mask = np.logical_and(valid_c, valid_upper)
+    else:
+        lower_bound = upper_z(input_file, divisions, (layer - 1))
+        valid_lower = input_file.Z > lower_bound
+        mask = np.logical_and(valid_c, valid_upper, valid_lower)
+    return input_file.X[mask], input_file.Y[mask]
+
+
 # plot the positional data and then save as PNG
 def contour(input, output, size, dpi):
 
@@ -37,25 +59,32 @@ def contour(input, output, size, dpi):
     plt.rcParams["figure.figsize"] = [size, size]
     plt.rcParams["figure.facecolor"] = "black"
 
-    mid_z = middle_z(input_file)
-
-    # bool masks for the input points that meet our conditions
-    l_mask = np.logical_and(input_file.Classification == 2, input_file.Z < mid_z)
-    h_mask = np.logical_and(input_file.Classification == 2, input_file.Z > mid_z)
-
     # the points from the input file which match our masks
-    low_points = input_file.X[l_mask], input_file.Y[l_mask]
-    high_points = input_file.X[h_mask], input_file.Y[h_mask]
-
-    print(low_points)
-    print(high_points)
+    points_1 = get_band(input_file, 10, 1)
+    points_2 = get_band(input_file, 10, 2)
+    points_3 = get_band(input_file, 10, 3)
+    points_4 = get_band(input_file, 10, 4)
+    points_5 = get_band(input_file, 10, 5)
+    points_6 = get_band(input_file, 10, 6)
+    points_7 = get_band(input_file, 10, 7)
+    points_8 = get_band(input_file, 10, 8)
+    points_9 = get_band(input_file, 10, 9)
+    points_10 = get_band(input_file, 10, 10)
 
     print("")
     print("CONTOUR PLOT")
     print("-----------------------------------------")
 
-    plt.plot(*low_points, color="DodgerBlue", linestyle="none", marker=",")
-    plt.plot(*high_points, color="LimeGreen", linestyle="none", marker=",")
+    plt.plot(*points_1, color=(0.0, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_2, color=(0.1, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_3, color=(0.2, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_4, color=(0.3, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_5, color=(0.4, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_6, color=(0.5, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_7, color=(0.6, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_8, color=(0.7, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_9, color=(0.8, 0.0, 1.0), linestyle="none", marker=",")
+    plt.plot(*points_10, color=(0.9, 0.0, 1.0), linestyle="none", marker=",")
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
     plt.margins(0, 0)
