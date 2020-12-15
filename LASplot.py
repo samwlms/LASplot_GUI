@@ -127,7 +127,7 @@ output_lbl.grid(row=1, column=1, sticky=E, padx=5, pady=5)
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
 # FRAME
-options_frame = LabelFrame(left, text="image options")
+options_frame = LabelFrame(left, text="image")
 options_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
 # CONTROLS
@@ -146,7 +146,7 @@ size_label.grid(row=4, column=1, sticky=W + E, padx=5, pady=5)
 # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
 
 # FRAME
-control_frame = LabelFrame(left, text="Images to generate")
+control_frame = LabelFrame(left, text="output")
 control_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
 # CONTROLS
