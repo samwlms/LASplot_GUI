@@ -23,28 +23,37 @@ def choose_dest():
 
 
 def valid_inputs():
-    if source_var.get() != "" and destination_var.get() != "":
-        if dpi_var.get().isnumeric() and size_var.get().isnumeric():
-            return True
+    # ensure input and output variables have a value
+    s_bool = source_var.get() != ""
+    d_bool = destination_var.get() != ""
+
+    # ensure the input for size and dpi are valid
+    dpi_bool = dpi_var.get().isnumeric()
+    size_bool = size_var.get().isnumeric()
+
+    if all(s_bool, d_bool, dpi_bool, size_bool):
+        return True
 
 
 def handler():
     if valid_inputs():
-        
+
         # delete existing filenames in the listbox
         file_box.delete(0, END)
-        
+
         # if 'layer' option is selected
         if plot_var.get() == 1:
-            
+
             # plot the images to PNG
-            plot.plot(source_var.get(), destination_var.get(), (int)size_var.get(), (int)dpi_var.get())
-            
+            size_int = int(size_var.get())
+            dpi_int = int(dpi_var.get())
+            plot.plot(source_var.get(), destination_var.get(), size_int, dpi_int)
+
             # get all image files at the output dir and make a list
             for the_file in os.listdir(destination_var.get()):
-                
+
                 if the_file.endswith("png"):
-                    
+
                     # make a list of 'PIL photoImage' objects
                     img_path = destination_var.get() + "/" + the_file
                     img = Image.open(img_path).resize((1000, 1000))
@@ -56,15 +65,15 @@ def handler():
             # update the GUI image box with an image from the output dir
             img_display.configure(image=images[0])
             img_display.update()
-        
+
         # if 'coutour' option is selected
         if contour_var.get() == 1:
             print("do contour stuff....")
-        
+
         # if 'composite' option is selected
         if composite_var.get() == 1:
             print("do composite stuff....")
-        
+
         # if 'print info' option is selected
         if print_var.get() == 1:
             printer.test(source_var.get())
@@ -134,7 +143,7 @@ input_btn = Button(
 )
 input_btn.grid(row=0, column=0, sticky=W, padx=5, pady=5)
 
-#button to select output destination
+# button to select output destination
 output_btn = Button(
     top,
     text="Output dir",
@@ -161,13 +170,13 @@ options_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
 dpi_label = Label(options_frame, text="DPI")
 dpi_label.grid(row=3, column=0, sticky=W + E, padx=5, pady=5)
 
-dpi_input = Entry(options_frame, textvariable= dpi_var)
+dpi_input = Entry(options_frame, textvariable=dpi_var)
 dpi_input.grid(row=3, column=1, sticky=W + E, padx=5, pady=5)
 
 size_label = Label(options_frame, text="SIZE")
 size_label.grid(row=4, column=0, sticky=W + E, padx=5, pady=5)
 
-size_label = Entry(options_frame, textvariable= size_var)
+size_label = Entry(options_frame, textvariable=size_var)
 size_label.grid(row=4, column=1, sticky=W + E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
