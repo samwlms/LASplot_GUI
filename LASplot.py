@@ -51,22 +51,6 @@ def handler():
             # plot the images to PNG
             plot.plot(source, destination, size_int, dpi_int)
 
-            # get all image files at the output dir and make a list
-            for the_file in os.listdir(destination_var.get()):
-
-                if the_file.endswith("png"):
-                    # make a list of 'PIL photoImage' objects
-                    img_path = destination_var.get() + "/" + the_file
-                    img = Image.open(img_path).resize((1000, 1000))
-                    images.append(ImageTk.PhotoImage(img))
-
-                    # insert the image name into the GUI listbox
-                    file_box.insert(END, the_file)
-
-            # update the GUI image box with an image from the output dir
-            img_display.configure(image=images[0])
-            img_display.update()
-
         # if 'coutour' option is selected
         if contour_var.get() == 1:
             contour.contour(source, destination, size_int, dpi_int)
@@ -78,6 +62,22 @@ def handler():
         # if 'print info' option is selected
         if print_var.get() == 1:
             printer.test(source_var.get())
+
+        # get all image files at the output dir and make a list
+        for the_file in os.listdir(destination_var.get()):
+
+            if the_file.endswith("png"):
+                # make a list of 'PIL photoImage' objects
+                img_path = destination_var.get() + "/" + the_file
+                img = Image.open(img_path).resize((1000, 1000))
+                images.append(ImageTk.PhotoImage(img))
+
+                # insert the image name into the GUI listbox
+                file_box.insert(END, the_file)
+
+        # update the GUI image box with an image from the output dir
+        img_display.configure(image=images[0])
+        img_display.update()
 
     else:
         print("please select correct input values")
