@@ -29,15 +29,18 @@ def valid_inputs():
 
 def handler():
     if valid_inputs():
+        file_box.delete(0, END)
         if plot_var.get() == 1:
             plot.plot(source_var.get(), destination_var.get(), 100, 20)
             for the_file in os.listdir(destination_var.get()):
                 if the_file.endswith("png"):
                     img_path = destination_var.get() + "/" + the_file
-                    print("img_path: ", img_path)
-                    images.append(
-                        ImageTk.PhotoImage(Image.open(img_path).resize((1000, 1000)))
-                    )
+                    img = Image.open(img_path).resize((1000, 1000))
+                    images.append(ImageTk.PhotoImage(img))
+
+                    # insert the image name into the GUI listbox
+                    file_box.insert(END, the_file)
+
             img_display.configure(image=images[0])
             img_display.update()
         if contour_var.get() == 1:
@@ -75,7 +78,6 @@ root.columnconfigure(1, weight=1)
 
 # a list of images that exist in the ouptu directory after plot
 images = []
-
 
 # ------------------------- GUI FRAMES (TOP, LEFT, IMG) -------------------------
 # the top level panel (input/ output files)
@@ -177,6 +179,24 @@ print_chk = Checkbutton(
     variable=print_var,
 )
 print_chk.grid(row=3, column=0, sticky=NW)
+
+# ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
+# FRAME
+control_frame = LabelFrame(left, text="view image")
+control_frame.grid(row=3, column=0, sticky=N + S + W + E, padx=10, pady=5)
+
+# LISTBOX
+file_box = Listbox(control_frame)
+file_box.grid(row=0, column=0, sticky=NW)
+
+
+def change_img(event):
+    img_index = file_box.curselection()[0]
+    img_display.configure(image=images[img_index])
+    img_display.update()
+
+
+file_box.bind("<<ListboxSelect>>", change_img)
 
 # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
 # GO button config
