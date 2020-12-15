@@ -1,23 +1,23 @@
-![app icon](https://github.com/samwlms/LASplot_GUI/blob/main/contour.png)
 
-## LASplot - *LIDAR visualisation and analysis toolset*
+# LASplot - *LIDAR visualisation tools*
 
-Multipurpose LIDAR analysis GUI built using the Tkinter framework
+### Multipurpose LIDAR analysis GUI built using the Tkinter framework
 
-LASplot gives users a quick and easy way to generate various types of imagery from a LAS file
 
->**Point classification seperation and plot:**
+![app icon](https://github.com/samwlms/LASplot_GUI/blob/main/images/contour.png)
+
+## >**Point classification seperation and plot:**
 - [x] Quickly visualise 1 file *(Normal output + QA Mode)*
 - [ ] For n files: plot
 
-![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/screenshot_plot.PNG)
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_plot.PNG)
 
->**Ground layer terrain analysis:**
+## >**Ground layer terrain analysis:**
 - [x] Colour banding to indicate changes in ground elevation
 
-![contour image](https://github.com/samwlms/LASplot_GUI/blob/main/screenshot_contour.PNG)
+![contour image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_contour.PNG)
 
->**Laspy tools integration:**
+## >**Laspy tools integration:**
 - [ ] Compress/ Decompress data (LAS <-> LAZ)
 - [ ] Validate
 
@@ -34,7 +34,7 @@ With options to generate:
 - 'ground contour' *color banded imagery to reflect changes in ground elevation*
 - 'file information' *general information about the file and header specifications*
 
-![controls image](https://github.com/samwlms/LASplot_GUI/blob/main/screenshot_settings.PNG)
+![controls image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_settings.PNG)
 
 
 ## Python powered data handling
