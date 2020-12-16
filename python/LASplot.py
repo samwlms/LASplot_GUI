@@ -73,7 +73,7 @@ def handler():
             if the_file.endswith("png"):
                 # make a list of 'PIL photoImage' objects
                 img_path = destination_var.get() + "/" + the_file
-                img = Image.open(img_path).resize((1000, 1000))
+                img = Image.open(img_path).resize((800, 800))
                 images.append(ImageTk.PhotoImage(img))
 
                 # insert the image name into the GUI listbox
@@ -108,7 +108,7 @@ print_var = IntVar()
 
 # window settings
 root.title("LASplot")
-root.geometry("1100x950")
+root.geometry("1920x1080")
 root.minsize(800, 400)
 root.rowconfigure(0, weight=0, minsize=120)
 root.columnconfigure(0, weight=0, minsize=250)
