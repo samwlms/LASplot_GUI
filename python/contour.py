@@ -14,13 +14,6 @@ def get_xy(in_points, classification):
     return x, y
 
 
-def middle_z(input_file):
-    # function that returns the mid point of the Z values
-    z = input_file.Z[input_file.Classification == 2]
-    z_delta = np.amax(z) - np.amin(z)
-    return np.amin(z) + (z_delta / 2)
-
-
 def upper_z(input_file, divisions, layer):
     # function that returns the upper Z bound of a colour band.
     # this function takes a given number of bands (divisions), a band number (layer)
