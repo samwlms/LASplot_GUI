@@ -21,63 +21,55 @@ def test(input):
     print("-----------------------------------------")
     print("")
 
-    print("")
-    print("")
-    print("----------------------------------")
-    print("evlrs:")
-    print("----------------------------------")
+    print("------ evlrs:")
+
     evlrs = input_file.header.evlrs
     for elvr in evlrs:
         print(evlr)
 
     print("")
-    print("")
-    print("----------------------------------")
-    print("global_encoding:")
-    print("----------------------------------")
+
+    print("------ global_encoding:")
+
     global_encoding = input_file.header.global_encoding
     print(global_encoding)
 
     print("")
-    print("")
-    print("----------------------------------")
-    print("WKT:")
-    print("----------------------------------")
+
+    print("------ WKT:")
+
     wkt = input_file.header.wkt
     print(wkt)
 
     print("")
-    print("")
-    print("----------------------------------")
-    print("guid's:")
-    print("----------------------------------")
+
+    print("------ guid's:")
+
     guid = input_file.header.guid
     print(guid)
 
     print("")
-    print("")
-    print("----------------------------------")
-    print("Point data format:")
-    print("----------------------------------")
+
+    print("------ Point data format:")
+
     pointformat = input_file.point_format
     for spec in pointformat:
         print(spec.name)
 
     print("")
-    print("")
-    print("----------------------------------")
-    print("Sample point data:")
-    print("----------------------------------")
+
+    print("------ Sample point data:")
+
     print(point_records[0])
 
     print("")
-    print("")
-    print("----------------------------------")
-    print("Header data format:")
-    print("----------------------------------")
+
+    print("------ Header data format:")
+
     headerformat = input_file.header.header_format
     for spec in headerformat:
         print(spec.name)
 
+    print("")
     print("-----------------------------------------")
     print("process complete")
