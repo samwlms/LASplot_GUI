@@ -55,9 +55,8 @@ def contour(input, output, size, dpi):
     print("CONTOUR PLOT")
     print("-----------------------------------------")
 
-    # read in LAS file and specify point records, las spec
+    # read in LAS file
     input_file = File(input, mode="r")
-    point_records = input_file.points
 
     # get the min/max X,Y values to normalise the plot scale
     x_min, x_max = np.amin(input_file.X), np.amax(input_file.X)
