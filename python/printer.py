@@ -1,3 +1,7 @@
+# Written by: Sam Williams
+# Contact: Swilliams9@uon.edu.au
+# Project is open for use/ collaboration by all!
+
 from laspy.file import File
 import laspy
 import numpy as np
@@ -12,9 +16,10 @@ def test(input):
     point_records = input_file.points
     pointformat = input_file.point_format
 
-    print("---------------------------------------------------------")
-    print("----------------- LAS FILE INFORMATION ------------------")
-    print("---------------------------------------------------------")
+    print("")
+    print("FILE INFO")
+    print("-----------------------------------------")
+    print("")
 
     print("")
     print("")
@@ -52,19 +57,10 @@ def test(input):
     print("")
     print("")
     print("----------------------------------")
-    print("Point format data:")
+    print("Point data format:")
     print("----------------------------------")
     pointformat = input_file.point_format
     for spec in pointformat:
-        print(spec.name)
-
-    print("")
-    print("")
-    print("----------------------------------")
-    print("Header format data:")
-    print("----------------------------------")
-    headerformat = input_file.header.header_format
-    for spec in headerformat:
         print(spec.name)
 
     print("")
@@ -76,4 +72,12 @@ def test(input):
 
     print("")
     print("")
-    print("---------------------------------------------------------||")
+    print("----------------------------------")
+    print("Header data format:")
+    print("----------------------------------")
+    headerformat = input_file.header.header_format
+    for spec in headerformat:
+        print(spec.name)
+
+    print("-----------------------------------------")
+    print("process complete")

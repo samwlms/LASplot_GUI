@@ -8,15 +8,32 @@ import matplotlib.pyplot as plt
 
 
 def upper_z(input_file, divisions, layer):
-    # function that returns the upper Z bound of a colour band.
-    # this function takes a given number of bands (divisions), a band number (layer)
-    # to determine the upper bound of that specifc band
+
+    """
+    function that returns the upper Z bound of a colour band.
+    this function takes a given number of bands (divisions),
+    a band number (layer) to determine the upper bound of that band
+    """
+
+    # all points that are of ground classification
     z = input_file.Z[input_file.Classification == 2]
+    # the difference between the highest and lowest point
     z_delta = np.amax(z) - np.amin(z)
+    # return the upper bound for the band
     return int(np.amin(z) + ((z_delta / divisions) * layer))
 
 
 def get_band(input_file, divisions, layer):
+
+    """
+    function that returns the X,Y values for points within
+    a specified depth band. This function takes a given
+    number of divisions (total layers) and a desired layer
+    index to determine the valid points that fall within
+    the high/low bounds for a depth band
+
+    """
+
     # the derived upper bound for the given depth band
     upper_bound = upper_z(input_file, divisions, layer)
     # boolean mask representing all ground points in file
