@@ -58,6 +58,10 @@ def get_band(input_file, divisions, layer):
 # plot the positional data and then save as PNG
 def contour(input, output, size, dpi):
 
+    print("")
+    print("CONTOUR PLOT")
+    print("-----------------------------------------")
+
     # read in LAS file and specify point records, las spec
     input_file = File(input, mode="r")
     point_records = input_file.points
@@ -73,33 +77,37 @@ def contour(input, output, size, dpi):
     plt.rcParams["figure.figsize"] = [size, size]
     plt.rcParams["figure.facecolor"] = "black"
 
-    # the points from the input file which match our masks
-    band_1 = get_band(input_file, 10, 1)
-    band_2 = get_band(input_file, 10, 2)
-    band_3 = get_band(input_file, 10, 3)
-    band_4 = get_band(input_file, 10, 4)
-    band_5 = get_band(input_file, 10, 5)
-    band_6 = get_band(input_file, 10, 6)
-    band_7 = get_band(input_file, 10, 7)
-    band_8 = get_band(input_file, 10, 8)
-    band_9 = get_band(input_file, 10, 9)
-    band_10 = get_band(input_file, 10, 10)
+    # the bands of points at various depths
+    bands = (
+        get_band(input_file, 10, 1),
+        get_band(input_file, 10, 2),
+        get_band(input_file, 10, 3),
+        get_band(input_file, 10, 4),
+        get_band(input_file, 10, 5),
+        get_band(input_file, 10, 6),
+        get_band(input_file, 10, 7),
+        get_band(input_file, 10, 8),
+        get_band(input_file, 10, 9),
+        get_band(input_file, 10, 10),
+    )
 
-    print("")
-    print("CONTOUR PLOT")
-    print("-----------------------------------------")
+    # the colour range to be assigned to the bands
+    colours = (
+        (1.0, 1.0, 1.0),
+        (0.8, 1.0, 1.0),
+        (0.6, 1.0, 1.0),
+        (0.4, 1.0, 1.0),
+        (0.2, 1.0, 1.0),
+        (0.0, 0.8, 1.0),
+        (0.0, 0.6, 1.0),
+        (0.0, 0.4, 1.0),
+        (0.0, 0.2, 1.0),
+        (0.0, 0.0, 1.0),
+    )
 
     # plot the individual bands sequentially
-    plt.plot(*band_1, color=(1.0, 1.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_2, color=(0.8, 1.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_3, color=(0.6, 1.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_4, color=(0.4, 1.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_5, color=(0.2, 1.0, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_6, color=(0.0, 0.8, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_7, color=(0.0, 0.6, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_8, color=(0.0, 0.4, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_9, color=(0.0, 0.2, 1.0), linestyle="none", marker=",")
-    plt.plot(*band_10, color=(0.0, 0.0, 1.0), linestyle="none", marker=",")
+    for b, c in zip(bands, colours):
+        plt.plot(*b, color=c, linestyle="none", marker=",")
 
     # ensure the image is not distorted by using known file min/max
     plt.xlim(x_min, x_max)
@@ -118,6 +126,7 @@ def contour(input, output, size, dpi):
         pad_inches=0,
         facecolor="black",
     )
+
     # clear the image from meory
     plt.clf()
 
