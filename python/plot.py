@@ -40,7 +40,8 @@ def plot(input, output, size, dpi):
     plt.rcParams["figure.facecolor"] = "black"
 
     print("")
-    print("CLASSIFICATION PLOT")
+    print("-----------------------------------------")
+    print("----------CLASSIFICATION PLOTS-----------")
     print("-----------------------------------------")
 
     const_args = output, dpi, x_min, x_max, y_min, y_max

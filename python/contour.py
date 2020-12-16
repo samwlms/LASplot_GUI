@@ -61,7 +61,9 @@ def get_band(input_file, divisions, layer):
 # plot the positional data and then save as PNG
 def contour(input, output, size, dpi):
     print("")
-    print("CONTOUR PLOT")
+
+    print("-----------------------------------------")
+    print("--------------CONTOUR PLOT---------------")
     print("-----------------------------------------")
 
     # read in LAS file

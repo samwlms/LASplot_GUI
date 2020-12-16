@@ -17,40 +17,12 @@ def test(input):
     pointformat = input_file.point_format
 
     print("")
-    print("FILE INFO")
+    print("-----------------------------------------")
+    print("----------------FILE INFO----------------")
     print("-----------------------------------------")
     print("")
 
-    print("------ evlrs:")
-
-    evlrs = input_file.header.evlrs
-    for elvr in evlrs:
-        print(evlr)
-
-    print("")
-
-    print("------ global_encoding:")
-
-    global_encoding = input_file.header.global_encoding
-    print(global_encoding)
-
-    print("")
-
-    print("------ WKT:")
-
-    wkt = input_file.header.wkt
-    print(wkt)
-
-    print("")
-
-    print("------ guid's:")
-
-    guid = input_file.header.guid
-    print(guid)
-
-    print("")
-
-    print("------ Point data format:")
+    print("------ Point data format: ------")
 
     pointformat = input_file.point_format
     for spec in pointformat:
@@ -58,13 +30,13 @@ def test(input):
 
     print("")
 
-    print("------ Sample point data:")
+    print("------ Sample point data: ------")
 
     print(point_records[0])
 
     print("")
 
-    print("------ Header data format:")
+    print("------ Header data format: ------")
 
     headerformat = input_file.header.header_format
     for spec in headerformat:

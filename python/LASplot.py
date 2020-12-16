@@ -61,7 +61,9 @@ def handler():
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
-            print("do composite stuff....")
+            print("")
+            print("(composite image stuff goes here)")
+            print("")
 
         # if 'print info' option is selected
         if print_var.get() == 1:
