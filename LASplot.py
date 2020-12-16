@@ -112,7 +112,7 @@ root.geometry("1100x950")
 root.minsize(800, 400)
 root.rowconfigure(0, weight=0, minsize=120)
 root.columnconfigure(0, weight=0, minsize=250)
-root.rowconfigure(1, weight=0)
+root.rowconfigure(1, weight=1)
 root.columnconfigure(1, weight=1)
 
 # a list of images that exist in the ouptu directory after plot
@@ -133,7 +133,7 @@ left.grid(row=1, column=0, sticky=W + N, padx=10, pady=5)
 img = LabelFrame(root)
 img.grid(row=1, column=1, sticky=S + N + W + E, padx=10, pady=5)
 
-img_display = Label(img)
+img_display = Label(img, background="black")
 img_display.pack(fill="both", expand=True)
 # grid(row=0, column=1, sticky=S + N + W + E, padx=10, pady=5)
 
