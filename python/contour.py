@@ -7,13 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# get the positional data of points in a specified classification
-def get_xy(in_points, classification):
-    x = in_points.X[in_points.Classification == classification]
-    y = in_points.Y[in_points.Classification == classification]
-    return x, y
-
-
 def upper_z(input_file, divisions, layer):
     # function that returns the upper Z bound of a colour band.
     # this function takes a given number of bands (divisions), a band number (layer)
@@ -50,7 +43,6 @@ def get_band(input_file, divisions, layer):
 
 # plot the positional data and then save as PNG
 def contour(input, output, size, dpi):
-
     print("")
     print("CONTOUR PLOT")
     print("-----------------------------------------")
@@ -62,10 +54,6 @@ def contour(input, output, size, dpi):
     x_min, x_max = np.amin(input_file.X), np.amax(input_file.X)
     y_min, y_max = np.amin(input_file.Y), np.amax(input_file.Y)
 
-    # initialise point-variable arrays
-    ground = get_xy(input_file, 2)
-
-    # basic params for the plot function
     plt.rcParams["figure.figsize"] = [size, size]
     plt.rcParams["figure.facecolor"] = "black"
 
@@ -108,9 +96,9 @@ def contour(input, output, size, dpi):
     # various output settings
     plt.margins(0, 0)
     plt.gca().set_facecolor("black")
-    fig = plt.gcf()
 
     # save the image to a given output
+    fig = plt.gcf()
     fig.savefig(
         output + "/contour.png",
         dpi=dpi,
