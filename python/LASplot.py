@@ -36,6 +36,13 @@ def valid_inputs():
         return True
 
 
+def change_img(event):
+    # when the file selection is updated - update image
+    img_index = file_box.curselection()[0]
+    img_display.configure(image=images[img_index])
+    img_display.update()
+
+
 def handler():
     if valid_inputs():
         # user variables
@@ -89,6 +96,9 @@ def handler():
         print("please select correct input values")
 
 
+# -----------------------------------------------------------------------------
+# --------------------------GUI CONFIGURATION AND LAYOUT-----------------------
+# -----------------------------------------------------------------------------
 # initialise window
 root = Tk()
 
@@ -101,6 +111,15 @@ dpi_var = StringVar()
 size_var = StringVar()
 dpi_var.set("25")
 size_var.set("100")
+
+# plot settings variables
+buildings_var = IntVar()
+ground_var = IntVar()
+unclassified_var = IntVar()
+lowVeg_var = IntVar()
+mediumVeg_var = IntVar()
+highVeg_var = IntVar()
+water_var = IntVar()
 
 # checkbox variables
 plot_var = IntVar()
@@ -128,7 +147,6 @@ top.columnconfigure(0, weight=1)
 top.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=5)
 
 left = LabelFrame(root, text="options")
-left.rowconfigure(0, weight=1)
 left.columnconfigure(0, weight=1)
 left.grid(row=1, column=0, sticky=W + N, padx=10, pady=5)
 
@@ -167,11 +185,46 @@ input_lbl.grid(row=0, column=1, sticky=E, padx=5, pady=5)
 output_lbl = Label(top, textvariable=destination_var)
 output_lbl.grid(row=1, column=1, sticky=E, padx=5, pady=5)
 
+# ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
+
+# FRAME
+control_frame = LabelFrame(left, text="operations")
+control_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
+
+# CONTROLS
+plot_chk = Checkbutton(
+    control_frame,
+    text="classification view",
+    variable=plot_var,
+)
+plot_chk.grid(row=0, column=0, sticky=NW)
+
+contour_chk = Checkbutton(
+    control_frame,
+    text="depth contour",
+    variable=contour_var,
+)
+contour_chk.grid(row=1, column=0, sticky=NW)
+
+composite_chk = Checkbutton(
+    control_frame,
+    text="composite image",
+    variable=composite_var,
+)
+composite_chk.grid(row=2, column=0, sticky=NW)
+
+print_chk = Checkbutton(
+    control_frame,
+    text="print info to console",
+    variable=print_var,
+)
+print_chk.grid(row=3, column=0, sticky=NW)
+
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
 # FRAME
 options_frame = LabelFrame(left, text="image")
-options_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
+options_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
 # CONTROLS
 dpi_label = Label(options_frame, text="DPI")
@@ -186,58 +239,62 @@ size_label.grid(row=4, column=0, sticky=W + E, padx=5, pady=5)
 size_label = Entry(options_frame, textvariable=size_var)
 size_label.grid(row=4, column=1, sticky=W + E, padx=5, pady=5)
 
-# ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
+# ---------------------------- CHOOSE PLOT SETTINGS ----------------------------
 
 # FRAME
-control_frame = LabelFrame(left, text="output")
-control_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=10, pady=5)
+plot_frame = LabelFrame(left, text="plot")
+plot_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
 # CONTROLS
 plot_chk = Checkbutton(
-    control_frame,
-    text="Individual classification layers",
-    variable=plot_var,
+    plot_frame,
+    text="ground",
+    variable=ground_var,
 )
 plot_chk.grid(row=0, column=0, sticky=NW)
 
 contour_chk = Checkbutton(
-    control_frame,
-    text="Groud contour",
-    variable=contour_var,
+    plot_frame,
+    text="buildings",
+    variable=buildings_var,
 )
 contour_chk.grid(row=1, column=0, sticky=NW)
 
 composite_chk = Checkbutton(
-    control_frame,
-    text="Composite image",
-    variable=composite_var,
+    plot_frame,
+    text="unclassified",
+    variable=unclassified_var,
 )
 composite_chk.grid(row=2, column=0, sticky=NW)
 
 print_chk = Checkbutton(
-    control_frame,
-    text="Print file info to console",
-    variable=print_var,
+    plot_frame,
+    text="water",
+    variable=water_var,
 )
 print_chk.grid(row=3, column=0, sticky=NW)
 
-# ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
-# FRAME
-control_frame = LabelFrame(left, text="view image")
-control_frame.grid(row=3, column=0, sticky=N + S + W + E, padx=10, pady=5)
+print_chk = Checkbutton(
+    plot_frame,
+    text="low veg",
+    variable=lowVeg_var,
+)
+print_chk.grid(row=4, column=0, sticky=NW)
 
-# LISTBOX
-file_box = Listbox(control_frame)
-file_box.grid(row=0, column=0, sticky=NW)
+print_chk = Checkbutton(
+    plot_frame,
+    text="medium veg",
+    variable=mediumVeg_var,
+)
+print_chk.grid(row=5, column=0, sticky=NW)
 
+print_chk = Checkbutton(
+    plot_frame,
+    text="high veg",
+    variable=highVeg_var,
+)
+print_chk.grid(row=6, column=0, sticky=NW)
 
-def change_img(event):
-    img_index = file_box.curselection()[0]
-    img_display.configure(image=images[img_index])
-    img_display.update()
-
-
-file_box.bind("<<ListboxSelect>>", change_img)
 
 # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
 # GO button config
@@ -250,8 +307,19 @@ begin_btn = Button(
     padx=10,
     pady=5,
 )
-begin_btn.grid(row=2, column=0, sticky=N + S + W + E, padx=10, pady=5)
+begin_btn.grid(row=3, column=0, sticky=N + S + W + E, padx=10, pady=5)
 
+# ---------------------------- CHOOSE IMAGE TO VIEW ----------------------------
+# FRAME
+control_frame = LabelFrame(left, text="view image")
+control_frame.grid(row=4, column=0, sticky=N + S + W + E, padx=10, pady=5)
+
+# LISTBOX
+file_box = Listbox(control_frame)
+file_box.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
+
+# update the image to match selection
+file_box.bind("<<ListboxSelect>>", change_img)
 
 if __name__ == "__main__":
     # run main window
