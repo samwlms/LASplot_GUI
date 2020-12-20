@@ -4,6 +4,7 @@
 
 from laspy.file import File
 import numpy as np
+import printer
 import matplotlib.pyplot as plt
 
 
@@ -59,12 +60,13 @@ def get_band(input_file, divisions, layer):
 
 
 # plot the positional data and then save as PNG
-def contour(input, output, size, dpi):
-    print("")
+def gradient(input, output, size, dpi):
 
-    print("-----------------------------------------")
-    print("--------------CONTOUR PLOT---------------")
-    print("-----------------------------------------")
+    # print console heading for process
+    printer.gradient_print()
+
+    # the name of the output file
+    filename = "/gradient.png"
 
     # read in LAS file
     input_file = File(input, mode="r")
@@ -73,7 +75,6 @@ def contour(input, output, size, dpi):
     x_min, x_max = np.amin(input_file.X), np.amax(input_file.X)
     y_min, y_max = np.amin(input_file.Y), np.amax(input_file.Y)
 
-    plt.rcParams["figure.figsize"] = [size, size]
     plt.rcParams["figure.facecolor"] = "black"
 
     # the bands of points at various depths
@@ -114,21 +115,24 @@ def contour(input, output, size, dpi):
 
     # various output settings
     plt.margins(0, 0)
-    plt.gca().set_facecolor("black")
+    plt.axis("off")
+    plt.tight_layout(pad=0.05)
 
     # save the image to a given output
     fig = plt.gcf()
+    fig.set_size_inches(size, size)
     fig.savefig(
-        output + "/contour.png",
+        output + filename,
         dpi=dpi,
-        bbox_inches="tight",
-        pad_inches=0,
+        pad_inches=-1,
         facecolor="black",
     )
 
     # clear the image from meory
     plt.clf()
 
-    print("contour.png saved successfully")
-    print("-----------------------------------------")
-    print("process complete")
+    # print the 'saved' status in console
+    printer.saved(filename)
+
+    # indicate completion in console
+    printer.complete()
