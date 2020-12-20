@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, contour, os
+import plot, printer, gradient, os
 
 
 # allows user to select a las file input
@@ -30,7 +30,7 @@ def valid_inputs():
 
     # ensure the input for size and dpi are valid
     dpi_bool = dpi_var.get().isnumeric()
-    size_bool = size_var.get().isnumeric()
+    size_bool = preview_size_var.get().isnumeric()
 
     if all([s_bool, d_bool, dpi_bool, size_bool]):
         return True
@@ -49,6 +49,7 @@ def handler():
         source = source_var.get()
         destination = destination_var.get()
         size_int = int(size_var.get())
+        preview_size_int = int(preview_size_var.get())
         dpi_int = int(dpi_var.get())
 
         # delete existing filenames in the listbox
@@ -63,8 +64,8 @@ def handler():
             plot.plot(source, destination, size_int, dpi_int)
 
         # if 'coutour' option is selected
-        if contour_var.get() == 1:
-            contour.contour(source, destination, size_int, dpi_int)
+        if gradient_var.get() == 1:
+            gradient.gradient(source, destination, size_int, dpi_int)
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
@@ -74,7 +75,7 @@ def handler():
 
         # if 'print info' option is selected
         if print_var.get() == 1:
-            printer.test(source_var.get())
+            printer.format(source_var.get())
 
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
@@ -82,7 +83,7 @@ def handler():
             if the_file.endswith("png"):
                 # make a list of 'PIL photoImage' objects
                 img_path = destination_var.get() + "/" + the_file
-                img = Image.open(img_path).resize((800, 800))
+                img = Image.open(img_path).resize((preview_size_int, preview_size_int))
                 images.append(ImageTk.PhotoImage(img))
 
                 # insert the image name into the GUI listbox
@@ -99,6 +100,10 @@ def handler():
 # -----------------------------------------------------------------------------
 # --------------------------GUI CONFIGURATION AND LAYOUT-----------------------
 # -----------------------------------------------------------------------------
+
+# having all this graphical code just thrown in to one file isn't ideal
+# TO DO: investigate ways so split it up and make it more readable. Maybe OOP
+
 # initialise window
 root = Tk()
 
@@ -108,9 +113,11 @@ destination_var = StringVar()
 
 # image settings variables
 dpi_var = StringVar()
+preview_size_var = StringVar()
 size_var = StringVar()
 dpi_var.set("25")
-size_var.set("100")
+preview_size_var.set("800")
+size_var.set("80")
 
 # plot settings variables
 buildings_var = IntVar()
@@ -123,7 +130,7 @@ water_var = IntVar()
 
 # checkbox variables
 plot_var = IntVar()
-contour_var = IntVar()
+gradient_var = IntVar()
 composite_var = IntVar()
 print_var = IntVar()
 
@@ -131,34 +138,32 @@ print_var = IntVar()
 root.title("LASplot")
 root.geometry("1920x1080")
 root.minsize(800, 400)
-root.rowconfigure(0, weight=0, minsize=120)
-root.columnconfigure(0, weight=0, minsize=250)
+root.rowconfigure(0, weight=0)
+root.columnconfigure(0, weight=0)
 root.rowconfigure(1, weight=1)
 root.columnconfigure(1, weight=1)
 
 # a list of images that exist in the ouptu directory after plot
 images = []
 
-# ------------------------- GUI FRAMES (TOP, LEFT, IMG) -------------------------
-# the top level panel (input/ output files)
-top = LabelFrame(root, text="user input/ output")
-top.rowconfigure(0, weight=5, minsize=40)
-top.columnconfigure(0, weight=1)
-top.grid(row=0, column=0, columnspan=2, sticky=N + W + E, padx=10, pady=5)
-
-left = LabelFrame(root, text="options")
-left.columnconfigure(0, weight=1)
-left.grid(row=1, column=0, sticky=W + N, padx=10, pady=5)
+options_frame = LabelFrame(root, text="options")
+options_frame.columnconfigure(0, weight=1)
+options_frame.grid(row=0, column=0, rowspan=2, sticky=W + N, padx=5, pady=5)
 
 img = LabelFrame(root)
-img.grid(row=1, column=1, sticky=S + N + W + E, padx=10, pady=5)
+img.grid(row=1, column=1, sticky=S + N + W + E, padx=5, pady=5)
 
 img_display = Label(img, background="black")
 img_display.pack(fill="both", expand=True)
-# grid(row=0, column=1, sticky=S + N + W + E, padx=10, pady=5)
+# grid(row=0, column=1, sticky=S + N + W + E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
 
+# FRAME
+top = LabelFrame(root, text="select file")
+top.rowconfigure(0, weight=5, minsize=40)
+top.columnconfigure(0, weight=1)
+top.grid(row=0, column=1, sticky=N + W + E, padx=5, pady=5)
 # button to select input file
 input_btn = Button(
     top,
@@ -178,18 +183,18 @@ output_btn = Button(
 output_btn.grid(row=1, column=0, sticky=W, padx=5, pady=5)
 
 # label to display chosen file
-input_lbl = Label(top, textvariable=source_var)
+input_lbl = Label(top, textvariable=source_var, fg="blue")
 input_lbl.grid(row=0, column=1, sticky=E, padx=5, pady=5)
 
 # label to display chosen destination
-output_lbl = Label(top, textvariable=destination_var)
+output_lbl = Label(top, textvariable=destination_var, fg="blue")
 output_lbl.grid(row=1, column=1, sticky=E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
 
 # FRAME
-control_frame = LabelFrame(left, text="operations")
-control_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
+control_frame = LabelFrame(options_frame, text="operations")
+control_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
 plot_chk = Checkbutton(
@@ -199,12 +204,12 @@ plot_chk = Checkbutton(
 )
 plot_chk.grid(row=0, column=0, sticky=NW)
 
-contour_chk = Checkbutton(
+gradient_chk = Checkbutton(
     control_frame,
-    text="depth contour",
-    variable=contour_var,
+    text="depth gradient",
+    variable=gradient_var,
 )
-contour_chk.grid(row=1, column=0, sticky=NW)
+gradient_chk.grid(row=1, column=0, sticky=NW)
 
 composite_chk = Checkbutton(
     control_frame,
@@ -223,27 +228,37 @@ print_chk.grid(row=3, column=0, sticky=NW)
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
 # FRAME
-options_frame = LabelFrame(left, text="image")
-options_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=10, pady=5)
+img_settings_frame = LabelFrame(options_frame, text="image")
+img_settings_frame.columnconfigure(0, weight=1)
+img_settings_frame.columnconfigure(1, weight=0)
+img_settings_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
-dpi_label = Label(options_frame, text="DPI")
-dpi_label.grid(row=3, column=0, sticky=W + E, padx=5, pady=5)
+dpi_label = Label(img_settings_frame, text="output DPI")
+dpi_label.grid(row=3, column=0, sticky=W, padx=5, pady=5)
 
-dpi_input = Entry(options_frame, textvariable=dpi_var)
-dpi_input.grid(row=3, column=1, sticky=W + E, padx=5, pady=5)
+dpi_input = Entry(img_settings_frame, textvariable=dpi_var, width=7)
+dpi_input.grid(row=3, column=1, sticky=E, padx=5, pady=5)
 
-size_label = Label(options_frame, text="SIZE")
-size_label.grid(row=4, column=0, sticky=W + E, padx=5, pady=5)
+size_label = Label(img_settings_frame, text="output size")
+size_label.grid(row=4, column=0, sticky=W, padx=5, pady=5)
 
-size_label = Entry(options_frame, textvariable=size_var)
-size_label.grid(row=4, column=1, sticky=W + E, padx=5, pady=5)
+size_label = Entry(img_settings_frame, textvariable=size_var, width=7)
+size_label.grid(row=4, column=1, sticky=E, padx=5, pady=5)
+
+preview_size_label = Label(img_settings_frame, text="preview size")
+preview_size_label.grid(row=5, column=0, sticky=W, padx=5, pady=5)
+
+preview_size_label = Entry(img_settings_frame, textvariable=preview_size_var, width=7)
+preview_size_label.grid(row=5, column=1, sticky=E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE PLOT SETTINGS ----------------------------
 
 # FRAME
-plot_frame = LabelFrame(left, text="plot")
-plot_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=10, pady=5)
+plot_frame = LabelFrame(options_frame, text="plot")
+plot_frame.columnconfigure(0, weight=1)
+plot_frame.columnconfigure(1, weight=0)
+plot_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
 plot_chk = Checkbutton(
@@ -253,12 +268,12 @@ plot_chk = Checkbutton(
 )
 plot_chk.grid(row=0, column=0, sticky=NW)
 
-contour_chk = Checkbutton(
+gradient_chk = Checkbutton(
     plot_frame,
     text="buildings",
     variable=buildings_var,
 )
-contour_chk.grid(row=1, column=0, sticky=NW)
+gradient_chk.grid(row=1, column=0, sticky=NW)
 
 composite_chk = Checkbutton(
     plot_frame,
@@ -299,24 +314,24 @@ print_chk.grid(row=6, column=0, sticky=NW)
 # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
 # GO button config
 begin_btn = Button(
-    left,
+    top,
     text="BEGIN",
     command=handler,
     background="dodgerblue",
     foreground="white",
-    padx=10,
+    padx=5,
     pady=5,
 )
-begin_btn.grid(row=3, column=0, sticky=N + S + W + E, padx=10, pady=5)
+begin_btn.grid(row=0, column=3, rowspan=2, sticky=N + S + W + E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE IMAGE TO VIEW ----------------------------
 # FRAME
-control_frame = LabelFrame(left, text="view image")
-control_frame.grid(row=4, column=0, sticky=N + S + W + E, padx=10, pady=5)
+control_frame = LabelFrame(options_frame, text="view image")
+control_frame.grid(row=4, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # LISTBOX
 file_box = Listbox(control_frame)
-file_box.grid(row=0, column=0, sticky=N + S + W + E, padx=10, pady=5)
+file_box.grid(row=0, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # update the image to match selection
 file_box.bind("<<ListboxSelect>>", change_img)
