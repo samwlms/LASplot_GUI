@@ -4,6 +4,7 @@
 
 from laspy.file import File
 import numpy as np
+import printer
 import matplotlib.pyplot as plt
 
 
@@ -16,6 +17,9 @@ def get_xy(in_points, classification):
 
 # plot the positional data and then save as PNG
 def plot(input, output, size, dpi):
+
+    # print console heading for process
+    printer.plot_print()
 
     # read in LAS file and specify point records, las spec
     input_file = File(input, mode="r")
@@ -36,15 +40,9 @@ def plot(input, output, size, dpi):
     water = get_xy(input_file, 9)
 
     # basic params for the plot function
-    plt.rcParams["figure.figsize"] = [size, size]
     plt.rcParams["figure.facecolor"] = "black"
 
-    print("")
-    print("-----------------------------------------")
-    print("----------CLASSIFICATION PLOTS-----------")
-    print("-----------------------------------------")
-
-    const_args = output, dpi, x_min, x_max, y_min, y_max
+    const_args = output, dpi, x_min, x_max, y_min, y_max, size
 
     # save the individual layer plots as .PNG
     save_plot(*unclassified, "/unclassified.png", "m", *const_args)
@@ -55,24 +53,35 @@ def plot(input, output, size, dpi):
     save_plot(*buildings, "/buildings.png", "White", *const_args)
     save_plot(*water, "/water.png", "DodgerBlue", *const_args)
 
-    print("-----------------------------------------")
-    print("process complete")
+    # indicate completion in console
+    printer.complete()
 
 
 # save the plotted images
-def save_plot(x_, y_, filename_, color_, output, dpi, x_min, x_max, y_min, y_max):
+def save_plot(x_, y_, filename_, color_, output, dpi, x_min, x_max, y_min, y_max, size):
     plt.plot(x_, y_, color=color_, linestyle="none", marker=",")
+
+    # ensure the image is not distorted by using known file min/max
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
+
+    # various output settings
     plt.margins(0, 0)
+    plt.axis("off")
+    plt.tight_layout(pad=0.05)
     plt.gca().set_facecolor("black")
+
+    # save the image to a given output
     fig = plt.gcf()
+    fig.set_size_inches(size, size)
     fig.savefig(
         output + filename_,
         dpi=dpi,
-        bbox_inches="tight",
-        pad_inches=0,
+        bbox_inches=0,
+        pad_inches=-1,
         facecolor="black",
     )
     plt.clf()
-    print(filename_, "saved successfully")
+
+    # print the 'saved' status for file
+    printer.saved(filename_)
