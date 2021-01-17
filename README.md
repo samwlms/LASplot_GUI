@@ -11,7 +11,7 @@ For any questions/ concerns/ feedback about the software, shoot me an email me a
 ### Point classification separation and plot:
 Allows users the ability to quickly visualise individual classification layers for the purposes of *per tile* quality control and QA. Use cases include:
 - quickly assessing high-vegetation and building noise contamination
-- viewing the relative 
+- viewing the relative makeup of the file (resedential, rural, city, etc.)
 
 ![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_plot.PNG)
 
