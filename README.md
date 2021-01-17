@@ -1,5 +1,5 @@
 # LASplot - *LIDAR visualisation tools*
-## Multipurpose LIDAR analysis GUI built using the Python (Tkinter framework)
+## Multipurpose/ fast LIDAR analysis software built with Python (using Tkinter framework)
 
 ### Overview
 LASplot is an ongoing work-in-progress and learning excersize which I have undertaken in order to improve my Python programming skills, while also learning more about LIDAR technologies. I am aware that there are many existing (more powerful) tools out there that can do much of what LASplot does. Please feel free to fork the main branch and add any features you'd like. I am more than open to feedback and collaboration.
