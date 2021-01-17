@@ -1,6 +1,8 @@
 # LASplot - *LIDAR visualisation tools*
 ## Multipurpose/ fast LIDAR analysis software built with Python (using Tkinter framework)
 
+![terrain image](https://github.com/samwlms/LASplot_GUI/blob/main/images/terrain.PNG)
+
 ### Overview
 LASplot is an ongoing work-in-progress and learning excersize which I have undertaken in order to improve my Python programming skills, while also learning more about LIDAR technologies. I am aware that there are many existing (more powerful) tools out there that can do much of what LASplot does. Please feel free to fork the main branch and add any features you'd like. I am more than open to feedback and collaboration.
 
@@ -20,7 +22,7 @@ Allows users the ability to quickly visualise individual classification layers f
 > #### Gradient
 ###### Represents the relative changes in ground elevation by marking elevation changes between the highest and lowest points on a given tile. The highest point on the tile will always be red (255, 0, 0), and conversely the lowest point will always be blue (0, 0, 255)
 
-![gradient image](https://github.com/samwlms/LASplot_GUI/blob/main/images/terrain.PNG)
+![gradient image](https://github.com/samwlms/LASplot_GUI/blob/main/images/gradient.PNG)
 
 Using the gradient functionality / option in the GUI, users are ables to quickly evaluate the relative changes in terrain elevation. The basic theory behind the gradient function is as follows:
 - The ground layer is split into X number of distinct bands determined by the Z value of each point record.
