@@ -32,7 +32,6 @@ def get_band(input_file, divisions, layer):
     number of divisions (total layers) and a desired layer
     index to determine the valid points that fall within
     the high/low bounds for a depth band
-
     """
 
     # the derived upper bound for the given depth band
@@ -59,8 +58,61 @@ def get_band(input_file, divisions, layer):
     return input_file.X[all_valid], input_file.Y[all_valid]
 
 
+def generate_colours(bands):
+
+    """
+    generate a tuple (of tuples) containing RGB values for individual colour bands.
+    rather than using a sine wave function to calculate RGB values, a simpler method
+    was implemented.See the documentation for a visual representation of the colour value theory.
+    """
+
+    colours = ()
+
+    # the distinct quartered disvisons used to evaluate RGB values
+    Q1 = bands / 4.0
+    Q2 = bands / 2.0
+    Q3 = Q1 + Q2
+    Q4 = bands
+
+    for count in range(0, bands):
+        # (1/4) red to yellow
+        if count <= Q1:
+            red = 0.0
+            green = round(count / (bands / 4), 1)
+            blue = 1.0
+        # (2/4) yellow to green
+        elif count > Q1 and count <= Q2:
+            red = 0.0
+            blue = round(2 - (count / (bands / 4)), 1)
+            green = 1.0
+        # (3/4) green to aqua
+        elif count > Q2 and count <= Q3:
+            red = round((count / (bands / 4) - 2), 1)
+            green = 1.0
+            blue = 0.0
+        # (4/4) aqua to blue
+        elif count > Q3:
+            red = 1.0
+            green = round(4 - (count / (bands / 4)), 1)
+            blue = 0.0
+
+        colours = colours + ((red, green, blue),)
+    return colours
+
+
+def generate_bands(input_file, bands):
+    final_bands = ()
+    for count in range(0, bands):
+        current_band = get_band(input_file, bands, count)
+        final_bands = final_bands + ((current_band),)
+    return final_bands
+
+
 # plot the positional data and then save as PNG
 def gradient(input, output, size, dpi):
+
+    # the number of colour bands to generate
+    num_colour_bands = 50
 
     # print console heading for process
     printer.gradient_print()
@@ -78,32 +130,10 @@ def gradient(input, output, size, dpi):
     plt.rcParams["figure.facecolor"] = "black"
 
     # the bands of points at various depths
-    bands = (
-        get_band(input_file, 10, 1),
-        get_band(input_file, 10, 2),
-        get_band(input_file, 10, 3),
-        get_band(input_file, 10, 4),
-        get_band(input_file, 10, 5),
-        get_band(input_file, 10, 6),
-        get_band(input_file, 10, 7),
-        get_band(input_file, 10, 8),
-        get_band(input_file, 10, 9),
-        get_band(input_file, 10, 10),
-    )
+    bands = generate_bands(input_file, num_colour_bands)
 
     # the colour range to be assigned to the bands
-    colours = (
-        (1.0, 1.0, 1.0),
-        (0.8, 1.0, 1.0),
-        (0.6, 1.0, 1.0),
-        (0.4, 1.0, 1.0),
-        (0.2, 1.0, 1.0),
-        (0.0, 0.8, 1.0),
-        (0.0, 0.6, 1.0),
-        (0.0, 0.4, 1.0),
-        (0.0, 0.2, 1.0),
-        (0.0, 0.0, 1.0),
-    )
+    colours = generate_colours(num_colour_bands)
 
     # plot the individual bands sequentially
     for b, c in zip(bands, colours):
