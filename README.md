@@ -6,14 +6,12 @@ LASplot is an ongoing work-in-progress and learning excersize which I have under
 
 For any questions/ concerns/ feedback about the software, shoot me an email me at: swilliams9@uon.edu.au
 
-![app icon](https://github.com/samwlms/LASplot_GUI/blob/main/images/contour.png)
-
 ### Point classification separation and plot:
 Allows users the ability to quickly visualise individual classification layers for the purposes of *per tile* quality control and QA. Use cases include:
 - quickly assessing high-vegetation and building noise contamination
 - viewing the relative makeup of the file (resedential, rural, city, etc.)
 
-![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_plot.PNG)
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/plot.PNG)
 
 ### Ground layer terrain analysis:
 
@@ -22,7 +20,7 @@ Allows users the ability to quickly visualise individual classification layers f
 > #### Gradient
 ###### Represents the relative changes in ground elevation by marking elevation changes between the highest and lowest points on a given tile. The highest point on the tile will always be red (255, 0, 0), and conversely the lowest point will always be blue (0, 0, 255)
 
-![gradient image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_contour.PNG)
+![gradient image](https://github.com/samwlms/LASplot_GUI/blob/main/images/terrain.PNG)
 
 Using the gradient functionality / option in the GUI, users are ables to quickly evaluate the relative changes in terrain elevation. The basic theory behind the gradient function is as follows:
 - The ground layer is split into X number of distinct bands determined by the Z value of each point record.
