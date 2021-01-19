@@ -16,7 +16,7 @@ def get_xy(in_points, classification):
 
 
 # plot the positional data and then save as PNG
-def plot(input, output, size, dpi):
+def plot(input, output, size, dpi, classifications):
 
     # print console heading for process
     printer.plot_print()
@@ -30,28 +30,34 @@ def plot(input, output, size, dpi):
     x_min, x_max = np.amin(input_file.X), np.amax(input_file.X)
     y_min, y_max = np.amin(input_file.Y), np.amax(input_file.Y)
 
-    # initialise point-variable arrays
-    buildings = get_xy(input_file, 6)
-    unclassified = get_xy(input_file, 1)
-    ground = get_xy(input_file, 2)
-    lowVeg = get_xy(input_file, 3)
-    medVeg = get_xy(input_file, 4)
-    highVeg = get_xy(input_file, 5)
-    water = get_xy(input_file, 9)
-
     # basic params for the plot function
     plt.rcParams["figure.facecolor"] = "black"
 
+    # constant arguments used in the plot function (packed/ unpacked with '*')
     const_args = output, dpi, x_min, x_max, y_min, y_max, size
 
-    # save the individual layer plots as .PNG
-    save_plot(*unclassified, "/unclassified.png", "m", *const_args)
-    save_plot(*ground, "/ground.png", "SaddleBrown", *const_args)
-    save_plot(*lowVeg, "/lowVeg.png", "LimeGreen", *const_args)
-    save_plot(*medVeg, "/mediumVeg.png", "Green", *const_args)
-    save_plot(*highVeg, "/highVeg.png", "DarkGreen", *const_args)
-    save_plot(*buildings, "/buildings.png", "White", *const_args)
-    save_plot(*water, "/water.png", "DodgerBlue", *const_args)
+    for arg in classifications:
+        if arg == 1:
+            unclassified = get_xy(input_file, arg)
+            save_plot(*unclassified, "/unclassified.png", "m", *const_args)
+        elif arg == 2:
+            ground = get_xy(input_file, 2)
+            save_plot(*ground, "/ground.png", "SaddleBrown", *const_args)
+        elif arg == 3:
+            lowVeg = get_xy(input_file, 3)
+            save_plot(*lowVeg, "/lowVeg.png", "LimeGreen", *const_args)
+        elif arg == 4:
+            medVeg = get_xy(input_file, 4)
+            save_plot(*medVeg, "/mediumVeg.png", "Green", *const_args)
+        elif arg == 5:
+            highVeg = get_xy(input_file, 5)
+            save_plot(*highVeg, "/highVeg.png", "DarkGreen", *const_args)
+        elif arg == 6:
+            buildings = get_xy(input_file, 6)
+            save_plot(*buildings, "/buildings.png", "White", *const_args)
+        elif arg == 9:
+            water = get_xy(input_file, 9)
+            save_plot(*water, "/water.png", "DodgerBlue", *const_args)
 
     # indicate completion in console
     printer.complete()
