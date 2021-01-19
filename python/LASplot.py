@@ -23,6 +23,55 @@ def choose_dest():
     destination_var.set(filedialog.askdirectory())
 
 
+# upon selection of the 'classification view' checkbox,
+# toggle the state of classification options
+def plot_checked():
+    if plot_var.get() == 1:
+        ground_chk.configure(state="normal")
+        buildings_chk.configure(state="normal")
+        unclassified_chk.configure(state="normal")
+        water_chk.configure(state="normal")
+        lowVeg_chk.configure(state="normal")
+        mediumVeg_chk.configure(state="normal")
+        highVeg_chk.configure(state="normal")
+    else:
+        ground_var.set(0)
+        buildings_var.set(0)
+        unclassified_var.set(0)
+        water_var.set(0)
+        lowVeg_var.set(0)
+        mediumVeg_var.set(0)
+        highVeg_var.set(0)
+
+        ground_chk.configure(state="disabled")
+        buildings_chk.configure(state="disabled")
+        unclassified_chk.configure(state="disabled")
+        water_chk.configure(state="disabled")
+        lowVeg_chk.configure(state="disabled")
+        mediumVeg_chk.configure(state="disabled")
+        highVeg_chk.configure(state="disabled")
+
+
+def get_plot_args():
+    arguments = []
+    if buildings_var.get() == 1:
+        arguments.append(6)
+    if ground_var.get() == 1:
+        arguments.append(2)
+    if unclassified_var.get() == 1:
+        arguments.append(1)
+    if lowVeg_var.get() == 1:
+        arguments.append(4)
+    if mediumVeg_var.get() == 1:
+        arguments.append(5)
+    if highVeg_var.get() == 1:
+        arguments.append(6)
+    if water_var.get() == 1:
+        arguments.append(9)
+
+    return arguments
+
+
 def valid_inputs():
     # ensure input and output variables have a value
     s_bool = source_var.get() != ""
@@ -61,7 +110,7 @@ def handler():
         # if 'layer' option is selected
         if plot_var.get() == 1:
             # plot the images to PNG
-            plot.plot(source, destination, size_int, dpi_int)
+            plot.plot(source, destination, size_int, dpi_int, get_plot_args())
 
         # if 'coutour' option is selected
         if gradient_var.get() == 1:
@@ -210,6 +259,7 @@ plot_chk = Checkbutton(
     control_frame,
     text="classification view",
     variable=plot_var,
+    command=plot_checked,
 )
 plot_chk.grid(row=0, column=0, sticky=NW)
 
@@ -235,9 +285,7 @@ highVeg_intensity_chk = Checkbutton(
 highVeg_intensity_chk.grid(row=3, column=0, sticky=NW)
 
 composite_chk = Checkbutton(
-    control_frame,
-    text="composite image",
-    variable=composite_var,
+    control_frame, text="composite image", variable=composite_var, state=DISABLED
 )
 composite_chk.grid(row=4, column=0, sticky=NW)
 
@@ -278,60 +326,67 @@ preview_size_label.grid(row=5, column=1, sticky=E, padx=5, pady=5)
 # ---------------------------- CHOOSE PLOT SETTINGS ----------------------------
 
 # FRAME
-plot_frame = LabelFrame(options_frame, text="plot")
+plot_frame = LabelFrame(options_frame, text="classifications")
 plot_frame.columnconfigure(0, weight=1)
 plot_frame.columnconfigure(1, weight=0)
 plot_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
-plot_chk = Checkbutton(
+ground_chk = Checkbutton(
     plot_frame,
     text="ground",
     variable=ground_var,
+    state=DISABLED,
 )
-plot_chk.grid(row=0, column=0, sticky=NW)
+ground_chk.grid(row=0, column=0, sticky=NW)
 
-gradient_chk = Checkbutton(
+buildings_chk = Checkbutton(
     plot_frame,
     text="buildings",
     variable=buildings_var,
+    state=DISABLED,
 )
-gradient_chk.grid(row=1, column=0, sticky=NW)
+buildings_chk.grid(row=1, column=0, sticky=NW)
 
-composite_chk = Checkbutton(
+unclassified_chk = Checkbutton(
     plot_frame,
     text="unclassified",
     variable=unclassified_var,
+    state=DISABLED,
 )
-composite_chk.grid(row=2, column=0, sticky=NW)
+unclassified_chk.grid(row=2, column=0, sticky=NW)
 
-print_chk = Checkbutton(
+water_chk = Checkbutton(
     plot_frame,
     text="water",
     variable=water_var,
+    state=DISABLED,
 )
-print_chk.grid(row=3, column=0, sticky=NW)
+water_chk.grid(row=3, column=0, sticky=NW)
 
-print_chk = Checkbutton(
+lowVeg_chk = Checkbutton(
     plot_frame,
     text="low veg",
     variable=lowVeg_var,
+    state=DISABLED,
 )
-print_chk.grid(row=4, column=0, sticky=NW)
+lowVeg_chk.grid(row=4, column=0, sticky=NW)
 
-print_chk = Checkbutton(
+mediumVeg_chk = Checkbutton(
     plot_frame,
     text="medium veg",
     variable=mediumVeg_var,
+    state=DISABLED,
 )
-print_chk.grid(row=5, column=0, sticky=NW)
+mediumVeg_chk.grid(row=5, column=0, sticky=NW)
 
-print_chk = Checkbutton(
+highVeg_chk = Checkbutton(
     plot_frame,
     text="high veg",
     variable=highVeg_var,
+    state=DISABLED,
 )
-print_chk.grid(row=6, column=0, sticky=NW)
+highVeg_chk.grid(row=6, column=0, sticky=NW)
 
 
 # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
