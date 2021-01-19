@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, gradient, os
+import plot, printer, gradient, intensity, os
 
 
 # allows user to select a las file input
@@ -77,6 +77,14 @@ def handler():
         if print_var.get() == 1:
             printer.format(source_var.get())
 
+        # if 'ground intensity' option is selected
+        if ground_intensity_var.get() == 1:
+            intensity.intensity(source, destination, size_int, dpi_int, 2)
+
+        # if 'highVeg intensity' option is selected
+        if highVeg_intensity_var.get() == 1:
+            intensity.intensity(source, destination, size_int, dpi_int, 5)
+
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
 
@@ -117,7 +125,7 @@ preview_size_var = StringVar()
 size_var = StringVar()
 dpi_var.set("25")
 preview_size_var.set("800")
-size_var.set("80")
+size_var.set("60")
 
 # plot settings variables
 buildings_var = IntVar()
@@ -133,6 +141,8 @@ plot_var = IntVar()
 gradient_var = IntVar()
 composite_var = IntVar()
 print_var = IntVar()
+ground_intensity_var = IntVar()
+highVeg_intensity_var = IntVar()
 
 # window settings
 root.title("LASplot")
@@ -155,7 +165,6 @@ img.grid(row=1, column=1, sticky=S + N + W + E, padx=5, pady=5)
 
 img_display = Label(img, background="black")
 img_display.pack(fill="both", expand=True)
-# grid(row=0, column=1, sticky=S + N + W + E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
 
@@ -206,24 +215,38 @@ plot_chk.grid(row=0, column=0, sticky=NW)
 
 gradient_chk = Checkbutton(
     control_frame,
-    text="depth gradient",
+    text="ground gradient",
     variable=gradient_var,
 )
 gradient_chk.grid(row=1, column=0, sticky=NW)
+
+ground_intensity_chk = Checkbutton(
+    control_frame,
+    text="ground intensity",
+    variable=ground_intensity_var,
+)
+ground_intensity_chk.grid(row=2, column=0, sticky=NW)
+
+highVeg_intensity_chk = Checkbutton(
+    control_frame,
+    text="highVeg intensity",
+    variable=highVeg_intensity_var,
+)
+highVeg_intensity_chk.grid(row=3, column=0, sticky=NW)
 
 composite_chk = Checkbutton(
     control_frame,
     text="composite image",
     variable=composite_var,
 )
-composite_chk.grid(row=2, column=0, sticky=NW)
+composite_chk.grid(row=4, column=0, sticky=NW)
 
 print_chk = Checkbutton(
     control_frame,
     text="print info to console",
     variable=print_var,
 )
-print_chk.grid(row=3, column=0, sticky=NW)
+print_chk.grid(row=5, column=0, sticky=NW)
 
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
