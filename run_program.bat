@@ -1,3 +1,3 @@
 @echo off
-call env/Scripts/activate.bat
-python python/LASplot.py
+call env/Scripts/activate.bat & pip freeze & python python/LASplot.py
+pause

@@ -72,3 +72,16 @@ _**Las specific data processing is handled by *[Laspy](https://laspy.readthedocs
 
 - [ ] Compress/ Decompress data (LAS <-> LAZ)
 - [ ] Header validation
+
+## Running LASplot - requirements and information
+
+_**How to run the LASplot application on your machine**_
+
+### Installation
+
+If you are running the application for the first time, simply click on **'install.bat'** to dynamically install the dependencies for LASplot
+
+### Running the application
+Once installed, the standard launch point for the application is **'run_program.bat'**. Using this method will run LASplot from the python virtual environment and help ensure cross-system compatibility.
+
+##### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3)_
