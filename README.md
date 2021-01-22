@@ -14,7 +14,7 @@ _**How to run the LASplot application on your machine**_
 
 ### Installation
 
-If you are running the application for the first time, simply click on **'install.bat'** to dynamically install the dependencies for LASplot
+If you are running the application for the first time, simply click on **'install.bat'** to initialise the application virtual environment, and install necessary dependencies.
 
 ### Running the application
 Once installed, the standard launch point for the application is **'run_program.bat'**. Using this method will run LASplot from the python virtual environment and help ensure cross-system compatibility.
