@@ -61,11 +61,11 @@ def get_plot_args():
     if unclassified_var.get() == 1:
         arguments.append(1)
     if lowVeg_var.get() == 1:
-        arguments.append(4)
+        arguments.append(3)
     if mediumVeg_var.get() == 1:
-        arguments.append(5)
+        arguments.append(4)
     if highVeg_var.get() == 1:
-        arguments.append(6)
+        arguments.append(5)
     if water_var.get() == 1:
         arguments.append(9)
 
