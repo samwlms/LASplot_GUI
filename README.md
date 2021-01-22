@@ -8,6 +8,19 @@ LASplot is an ongoing work-in-progress and learning exercise which I have undert
 
 For any questions/ concerns/ feedback about the software, shoot me an email me at: swilliams9@uon.edu.au
 
+## Running LASplot - requirements and information
+
+_**How to run the LASplot application on your machine**_
+
+### Installation
+
+If you are running the application for the first time, simply click on **'install.bat'** to dynamically install the dependencies for LASplot
+
+### Running the application
+Once installed, the standard launch point for the application is **'run_program.bat'**. Using this method will run LASplot from the python virtual environment and help ensure cross-system compatibility.
+
+##### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3)_
+
 ## Point classification separation and plot:
 Allows users the ability to quickly visualise individual classification layers for the purposes of *per tile* quality control and QA. Use cases include:
 - quickly assessing high-vegetation and building noise contamination
@@ -73,15 +86,3 @@ _**Las specific data processing is handled by *[Laspy](https://laspy.readthedocs
 - [ ] Compress/ Decompress data (LAS <-> LAZ)
 - [ ] Header validation
 
-## Running LASplot - requirements and information
-
-_**How to run the LASplot application on your machine**_
-
-### Installation
-
-If you are running the application for the first time, simply click on **'install.bat'** to dynamically install the dependencies for LASplot
-
-### Running the application
-Once installed, the standard launch point for the application is **'run_program.bat'**. Using this method will run LASplot from the python virtual environment and help ensure cross-system compatibility.
-
-##### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3)_
