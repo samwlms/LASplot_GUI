@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, gradient, intensity, os
+import plot, printer, gradient, intensity, world, os
 
 
 # allows user to select a las file input
@@ -139,6 +139,7 @@ def handler():
 
         # if 'generate world files' option is selected
         if world_var.get() == 1:
+            world.make_world_file(source, destination)
             print("OPERATION: 'generated world files' selected")
 
         # get all image files at the output dir and make a list
