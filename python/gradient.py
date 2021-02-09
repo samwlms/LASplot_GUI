@@ -4,7 +4,7 @@
 
 from laspy.file import File
 import numpy as np
-import printer
+import printer, time
 import matplotlib.pyplot as plt
 
 
@@ -111,6 +111,8 @@ def generate_bands(input_file, bands):
 # plot the positional data and then save as PNG
 def gradient(input, output, size, dpi):
 
+    start = time.time()
+
     # the number of colour bands to generate
     num_colour_bands = 50
 
@@ -161,8 +163,10 @@ def gradient(input, output, size, dpi):
     # clear the image from meory
     plt.clf()
 
+    time_output = time.time() - start
+
     # print the 'saved' status in console
-    printer.saved(filename)
+    printer.saved(filename, time_output)
 
     # indicate completion in console
     printer.complete()

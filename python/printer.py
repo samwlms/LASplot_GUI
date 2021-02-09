@@ -8,8 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def saved(filename):
-    print(filename, "saved successfully")
+def saved(filename, time):
+    string_time = str(round(time, 2)) + "s"
+    print(filename, "saved in", string_time)
 
 
 def plot_print():
