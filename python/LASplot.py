@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, gradient, intensity, os
+import plot, printer, gradient, intensity, world, os
 
 
 # allows user to select a las file input
@@ -86,10 +86,13 @@ def valid_inputs():
 
 
 def change_img(event):
-    # when the file selection is updated - update image
-    img_index = file_box.curselection()[0]
-    img_display.configure(image=images[img_index])
-    img_display.update()
+    try:
+        # when the file selection is updated - update image
+        img_index = file_box.curselection()[0]
+        img_display.configure(image=images[img_index])
+        img_display.update()
+    except:
+        print("ERROR: no images to select")
 
 
 def handler():
@@ -134,6 +137,11 @@ def handler():
         if highVeg_intensity_var.get() == 1:
             intensity.intensity(source, destination, size_int, dpi_int, 5)
 
+        # if 'generate world files' option is selected
+        if world_var.get() == 1:
+            world.make_world_file(source, destination)
+            print("OPERATION: 'generated world files' selected")
+
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
 
@@ -146,12 +154,15 @@ def handler():
                 # insert the image name into the GUI listbox
                 file_box.insert(END, the_file)
 
-        # update the GUI image box with an image from the output dir
-        img_display.configure(image=images[0])
-        img_display.update()
+        try:
+            # update the GUI image box with an image from the output dir
+            img_display.configure(image=images[0])
+            img_display.update()
+        except:
+            print("ERROR: no images to display in destination dir")
 
     else:
-        print("please select correct input values")
+        print("ERROR: please select valid input/ output directory")
 
 
 # -----------------------------------------------------------------------------
@@ -175,6 +186,9 @@ size_var = StringVar()
 dpi_var.set("25")
 preview_size_var.set("800")
 size_var.set("60")
+
+# GIS settings variables
+world_var = IntVar()
 
 # plot settings variables
 buildings_var = IntVar()
@@ -296,13 +310,24 @@ print_chk = Checkbutton(
 )
 print_chk.grid(row=5, column=0, sticky=NW)
 
+# FRAME
+gis_frame = LabelFrame(options_frame, text="GIS")
+gis_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=5, pady=5)
+
+world_chk = Checkbutton(
+    gis_frame,
+    text="generate world file",
+    variable=world_var,
+)
+world_chk.grid(row=5, column=0, sticky=NW)
+
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
 # FRAME
 img_settings_frame = LabelFrame(options_frame, text="image")
 img_settings_frame.columnconfigure(0, weight=1)
 img_settings_frame.columnconfigure(1, weight=0)
-img_settings_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=5, pady=5)
+img_settings_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
 dpi_label = Label(img_settings_frame, text="output DPI")
@@ -329,7 +354,7 @@ preview_size_label.grid(row=5, column=1, sticky=E, padx=5, pady=5)
 plot_frame = LabelFrame(options_frame, text="classifications")
 plot_frame.columnconfigure(0, weight=1)
 plot_frame.columnconfigure(1, weight=0)
-plot_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=5, pady=5)
+plot_frame.grid(row=3, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
 ground_chk = Checkbutton(

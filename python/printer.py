@@ -8,8 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def saved(filename):
-    print(filename, "saved successfully")
+def saved(filename, time):
+    string_time = str(round(time, 2)) + "s"
+    print(filename, "saved in", string_time)
 
 
 def plot_print():
@@ -65,19 +66,68 @@ def format(input):
     point_records = input_file.points
     pointformat = input_file.point_format
 
+    header = input_file.header
+
     info_print()
 
-    print("------ Point data format: ------")
+    print("LAS Specification =", header.major_version, ".", header.minor_version)
+    print("")
+
+    print("------------ Point data format: ------------")
     pointformat = input_file.point_format
     for spec in pointformat:
         print(spec.name)
+    print("")
 
-    print("------ Sample point data: ------")
+    print("------------ Sample point data: ------------")
     print(point_records[0])
+    print("")
 
-    print("------ Header data format: ------")
-    headerformat = input_file.header.header_format
-    for spec in headerformat:
-        print(spec.name)
+    print("------------ Header data: ------------")
+
+    header_specs = (
+        "file_signature",
+        "file_source_id",
+        "global_encoding",
+        "gps_time_type",
+        "guid",
+        "version_major",
+        "version_minor",
+        "system_id",
+        "software_id",
+        "header_size",
+        "data_offset",
+        "data_format_id",
+        "data_record_length",
+        "records_count",
+        "point_return_count",
+        "scale",
+        "offset",
+        "max",
+        "min",
+        "start_first_evlr",
+    )
+
+    for spec in header_specs:
+        try:
+            print(spec, ":", getattr(header, spec))
+        except:
+            print(spec, ": value not found")
+    print("")
+
+    print("------------ VLR's: ------------")
+
+    for count, rec in enumerate(header.vlrs):
+        print("~~~ VLR #" + str(count), "~~~")
+        print("Description:", rec.description)
+        print("VLR content:")
+        print(rec.VLR_body)
+        print("")
+
+    print("------ EVLR's: ------")
+
+    for rec in header.evlrs:
+        print(rec)
+    print("")
 
     complete()

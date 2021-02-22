@@ -4,7 +4,7 @@
 
 from laspy.file import File
 import numpy as np
-import printer
+import printer, time
 import matplotlib.pyplot as plt
 
 
@@ -67,6 +67,8 @@ def plot(input, output, size, dpi, classifications):
 def save_plot(x_, y_, filename_, color_, output, dpi, x_min, x_max, y_min, y_max, size):
     plt.plot(x_, y_, color=color_, linestyle="none", marker=",")
 
+    start = time.time()
+
     # ensure the image is not distorted by using known file min/max
     plt.xlim(x_min, x_max)
     plt.ylim(y_min, y_max)
@@ -89,5 +91,7 @@ def save_plot(x_, y_, filename_, color_, output, dpi, x_min, x_max, y_min, y_max
     )
     plt.clf()
 
+    time_output = time.time() - start
+
     # print the 'saved' status for file
-    printer.saved(filename_)
+    printer.saved(filename_, time_output)
