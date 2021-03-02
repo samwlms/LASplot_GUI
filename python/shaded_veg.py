@@ -28,9 +28,8 @@ def plot_shaded(input):
         ]
     ).transpose()
 
-    a_veg_point = veg[100]
-    closest_point = ground[KDTree(ground).query(a_veg_point)[1]]
-    print("a_veg_point:", a_veg_point)
-    print("closest point:", closest_point)
-    distance_from_ground = a_veg_point[2] - closest_point[2]
-    print("distance_from_ground:", distance_from_ground)
+    tree = KDTree(ground)
+    for point in veg:
+        closest_point = ground[tree.query(point)[1]]
+        distance_from_ground = point[2] - closest_point[2]
+        print("distance from ground:", distance_from_ground)
