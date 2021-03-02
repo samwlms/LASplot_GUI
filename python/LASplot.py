@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, gradient, intensity, world, os
+import plot, printer, gradient, intensity, shaded_veg, world, os
 
 
 # allows user to select a las file input
@@ -142,6 +142,10 @@ def handler():
             world.make_world_file(source, destination)
             print("OPERATION: 'generated world files' selected")
 
+        # if 'highVeg shaded' option is selected
+        if highVeg_shaded_var.get() == 1:
+            shaded_veg.plot_shaded(source)
+
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
 
@@ -206,6 +210,7 @@ composite_var = IntVar()
 print_var = IntVar()
 ground_intensity_var = IntVar()
 highVeg_intensity_var = IntVar()
+highVeg_shaded_var = IntVar()
 
 # window settings
 root.title("LASplot")
@@ -298,17 +303,24 @@ highVeg_intensity_chk = Checkbutton(
 )
 highVeg_intensity_chk.grid(row=3, column=0, sticky=NW)
 
+highVeg_shaded_chk = Checkbutton(
+    control_frame,
+    text="highVeg (shaded)",
+    variable=highVeg_shaded_var,
+)
+highVeg_shaded_chk.grid(row=4, column=0, sticky=NW)
+
 composite_chk = Checkbutton(
     control_frame, text="composite image", variable=composite_var, state=DISABLED
 )
-composite_chk.grid(row=4, column=0, sticky=NW)
+composite_chk.grid(row=5, column=0, sticky=NW)
 
 print_chk = Checkbutton(
     control_frame,
     text="print info to console",
     variable=print_var,
 )
-print_chk.grid(row=5, column=0, sticky=NW)
+print_chk.grid(row=6, column=0, sticky=NW)
 
 # FRAME
 gis_frame = LabelFrame(options_frame, text="GIS")
