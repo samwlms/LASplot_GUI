@@ -32,13 +32,20 @@ def plot_shaded(input):
 
     heights = []
 
-    for count, point in enumerate(veg):
+    for point in veg:
         height = round(get_height(ground_tree, ground, point) * 0.01, 2)
         heights.append(height)
-    max_height = np.amax(heights)
-    min_height = np.amin(heights)
-    print("max height:", max_height)
-    print("min height:", min_height)
+
+    veg_with_height = np.vstack(
+        [
+            input_file.X[input_file.Classification == 5],
+            input_file.Y[input_file.Classification == 5],
+            heights,
+        ]
+    ).transpose()
+
+    print(veg_with_height[:, 2][:20])
+    print(heights[:20])
 
 
 def get_height(ground_tree, ground, point):
