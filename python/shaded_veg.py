@@ -10,7 +10,8 @@ import time
 import matplotlib.pyplot as plt
 
 
-def plot_shaded(input):
+def plot_shaded(input, output, size_int, dpi_int):
+    start = time.time()
     input_file = File(input, mode="r")
     veg = np.vstack(
         [
@@ -46,8 +47,20 @@ def plot_shaded(input):
 
     bands_required = 50
 
-    point_bands = generate_veg_bands(veg_with_height, bands_required)
-    generate_band_colours(bands_required)
+    bands = generate_veg_bands(veg_with_height, bands_required)
+    colours = generate_band_colours(bands_required)
+
+    filename = "/shaded_veg.png"
+
+    plot_bands(input_file, filename, bands, colours, output, size_int, dpi_int)
+
+    time_output = time.time() - start
+
+    # print the 'saved' status in console
+    printer.saved(filename, time_output)
+
+    # indicate completion in console
+    printer.complete()
 
 
 def generate_veg_bands(veg_points, bands_required):
@@ -67,19 +80,15 @@ def generate_veg_bands(veg_points, bands_required):
         # for the first band, include all points < 2m high
         if count == 0:
             valid = veg_points[:, 2] < height
-            band = veg_points[valid]
-            bands = bands + ((band),)
         # for the final band, include all points > height
         elif count == bands_required - 1:
             valid = veg_points[:, 2] >= height
-            band = veg_points[valid]
-            bands = bands + ((band),)
         else:
             upper_limit = veg_points[:, 2] < height + 1
             lower_limit = veg_points[:, 2] >= height
             valid = np.logical_and(upper_limit, lower_limit)
-            band = veg_points[valid]
-            bands = bands + ((band),)
+        band = veg_points[valid]
+        bands = bands + ((band),)
     return bands
 
 
@@ -105,9 +114,9 @@ def generate_band_colours(bands_required):
     for count in range(bands_required):
         green = round(green + increment, 3)
         band_colour = (red, green, blue)
-        print("count:", count)
-        print("band_colour:", band_colour)
         colours = colours + (band_colour,)
+
+    return colours
 
 
 def get_height(ground_tree, ground, point):
@@ -120,3 +129,41 @@ def get_height(ground_tree, ground, point):
     closest_point = ground[ground_tree.query(point)[1]]
     distance_from_ground = point[2] - closest_point[2]
     return distance_from_ground
+
+
+def plot_bands(file, filename, bands, colours, output, size, dpi):
+
+    # get the min/max X,Y values to normalise the plot scale
+    x_min, x_max = np.amin(file.X), np.amax(file.X)
+    y_min, y_max = np.amin(file.Y), np.amax(file.Y)
+
+    # plot the individual bands sequentially
+    for b, c in zip(bands, colours):
+        try:
+            print("band sample:", b[0])
+            print("colour:", c)
+            plt.plot(b[:, 0], b[:, 1], color=c, linestyle="none", marker=",")
+        except Exception as e:
+            print(e)
+
+    # ensure the image is not distorted by using known file min/max
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+
+    # various output settings
+    plt.margins(0, 0)
+    plt.axis("off")
+    plt.tight_layout(pad=0.05)
+
+    # save the image to a given output
+    fig = plt.gcf()
+    fig.set_size_inches(size, size)
+    fig.savefig(
+        output + filename,
+        dpi=dpi,
+        pad_inches=-1,
+        facecolor="black",
+    )
+
+    # clear the image from meory
+    plt.clf()
