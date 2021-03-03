@@ -140,7 +140,8 @@ def handler():
 
         # if 'highVeg shaded' option is selected
         if highVeg_shaded_var.get() == 1:
-            shaded_veg.plot_shaded(source)
+            shaded_veg.plot_shaded(source, destination, size_int, dpi_int)
+            print("OPERATION: 'highVeg shaded' selected")
 
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
