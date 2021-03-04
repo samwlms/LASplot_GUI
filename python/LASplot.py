@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, gradient, intensity, world, os
+import plot, printer, banding_functions, shaded_veg, world, os
 
 
 # allows user to select a las file input
@@ -115,9 +115,9 @@ def handler():
             # plot the images to PNG
             plot.plot(source, destination, size_int, dpi_int, get_plot_args())
 
-        # if 'coutour' option is selected
+        # if 'gradient' option is selected
         if gradient_var.get() == 1:
-            gradient.gradient(source, destination, size_int, dpi_int)
+            banding_functions.main("gradient", source, destination, size_int, dpi_int)
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
@@ -131,16 +131,17 @@ def handler():
 
         # if 'ground intensity' option is selected
         if ground_intensity_var.get() == 1:
-            intensity.intensity(source, destination, size_int, dpi_int, 2)
-
-        # if 'highVeg intensity' option is selected
-        if highVeg_intensity_var.get() == 1:
-            intensity.intensity(source, destination, size_int, dpi_int, 5)
+            banding_functions.main("intensity", source, destination, size_int, dpi_int)
 
         # if 'generate world files' option is selected
         if world_var.get() == 1:
             world.make_world_file(source, destination)
             print("OPERATION: 'generated world files' selected")
+
+        # if 'highVeg shaded' option is selected
+        if highVeg_shaded_var.get() == 1:
+            shaded_veg.plot_shaded(source, destination, size_int, dpi_int)
+            print("OPERATION: 'highVeg shaded' selected")
 
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
@@ -205,7 +206,7 @@ gradient_var = IntVar()
 composite_var = IntVar()
 print_var = IntVar()
 ground_intensity_var = IntVar()
-highVeg_intensity_var = IntVar()
+highVeg_shaded_var = IntVar()
 
 # window settings
 root.title("LASplot")
@@ -291,12 +292,12 @@ ground_intensity_chk = Checkbutton(
 )
 ground_intensity_chk.grid(row=2, column=0, sticky=NW)
 
-highVeg_intensity_chk = Checkbutton(
+highVeg_shaded_chk = Checkbutton(
     control_frame,
-    text="highVeg intensity",
-    variable=highVeg_intensity_var,
+    text="highVeg (shaded)",
+    variable=highVeg_shaded_var,
 )
-highVeg_intensity_chk.grid(row=3, column=0, sticky=NW)
+highVeg_shaded_chk.grid(row=3, column=0, sticky=NW)
 
 composite_chk = Checkbutton(
     control_frame, text="composite image", variable=composite_var, state=DISABLED
