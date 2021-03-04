@@ -45,7 +45,7 @@ def plot_shaded(input, output, size_int, dpi_int):
         ]
     ).transpose()
 
-    bands_required = 50
+    bands_required = 15
 
     bands = generate_veg_bands(veg_with_height, bands_required)
     colours = generate_band_colours(bands_required)
@@ -76,7 +76,7 @@ def generate_veg_bands(veg_points, bands_required):
     """
     bands = ()
     for count in range(bands_required):
-        height = count + 3
+        height = count
         # for the first band, include all points < 2m high
         if count == 0:
             valid = veg_points[:, 2] < height
@@ -104,15 +104,15 @@ def generate_band_colours(bands_required):
     1.0 - 0.35 / number of bands
     """
 
-    increment = (1.0 - 0.35) / bands_required
+    increment = (1.0 - 0.2) / bands_required
     colours = ()
 
     red = 0.0
-    green = 0.35
+    green = 1.0
     blue = 0.0
 
     for count in range(bands_required):
-        green = round(green + increment, 3)
+        green = round(green - increment, 3)
         band_colour = (red, green, blue)
         colours = colours + (band_colour,)
 
