@@ -28,6 +28,13 @@ Allows users the ability to quickly visualise individual classification layers f
 
 ![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/plot.PNG)
 
+## Shaded vegetation option
+
+LASplot can now generate shaded vegetation imagery. The algorithm will shade high vegetation points on a colour gradient by considering their individual distance from ground. This option takes a little longer to generate images (approx 10 seconds, depending on specified output arguments), but is still quite optimized. Using the inbuilt GUI image generation arguments (DPI + Size), it is possible to generate useful snapshots for analysis at any scale.
+
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/shaded_veg.PNG)
+
+
 ## Ground layer terrain analysis:
 
 _**With the following options, users may visualise both relative and/ or absolute variance in terrain elevation**_
