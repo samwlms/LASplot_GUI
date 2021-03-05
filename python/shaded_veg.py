@@ -75,13 +75,12 @@ def generate_veg_bands(veg_points, bands_required):
     a potential solution to this problem.
     """
     bands = ()
-    for count in range(bands_required):
-        height = count
+    for height in range(bands_required):
         # for the first band, include all points < 2m high
-        if count == 0:
+        if height == 0:
             valid = veg_points[:, 2] < height
         # for the final band, include all points > height
-        elif count == bands_required - 1:
+        elif height == bands_required - 1:
             valid = veg_points[:, 2] >= height
         else:
             upper_limit = veg_points[:, 2] < height + 1
@@ -140,8 +139,6 @@ def plot_bands(file, filename, bands, colours, output, size, dpi):
     # plot the individual bands sequentially
     for b, c in zip(bands, colours):
         try:
-            print("band sample:", b[0])
-            print("colour:", c)
             plt.plot(b[:, 0], b[:, 1], color=c, linestyle="none", marker=",")
         except Exception as e:
             print(e)
