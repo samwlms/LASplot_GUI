@@ -103,6 +103,7 @@ def handler():
         size = int(size_var.get())
         preview_size_int = int(preview_size_var.get())
         dpi = int(dpi_var.get())
+        marker = marker_var.get()
 
         # delete existing filenames in the listbox
         file_box.delete(0, END)
@@ -114,13 +115,15 @@ def handler():
         if plot_var.get() == 1:
             layers = get_plot_args()
             # plot the images to PNG
-            plotter = plotters.LayerPlotter(source, destination, size, dpi, layers)
+            plotter = plotters.LayerPlotter(
+                source, destination, size, dpi, marker, layers
+            )
             plotter.plot()
 
         # if 'gradient' option is selected
         if gradient_var.get() == 1:
             plotter = plotters.GradientPlotter(
-                "gradient", source, destination, size, dpi
+                "gradient", source, destination, size, dpi, marker
             )
             plotter.plot_gradient()
 
@@ -137,7 +140,7 @@ def handler():
         # if 'ground intensity' option is selected
         if ground_intensity_var.get() == 1:
             plotter = plotters.GradientPlotter(
-                "intensity", source, destination, size, dpi
+                "intensity", source, destination, size, dpi, marker
             )
             plotter.plot_gradient()
 
@@ -148,7 +151,7 @@ def handler():
 
         # if 'highVeg shaded' option is selected
         if highVeg_shaded_var.get() == 1:
-            shader = plotters.VegShader(source, destination, size, dpi)
+            shader = plotters.VegShader(source, destination, size, dpi, marker)
             shader.plot_shaded()
             print("OPERATION: 'highVeg shaded' selected")
 
@@ -191,11 +194,13 @@ destination_var = StringVar()
 
 # image settings variables
 dpi_var = StringVar()
-preview_size_var = StringVar()
-size_var = StringVar()
 dpi_var.set("25")
+preview_size_var = StringVar()
 preview_size_var.set("800")
-size_var.set("60")
+size_var = StringVar()
+size_var.set("100")
+marker_var = StringVar()
+marker_var.set("s")
 
 # GIS settings variables
 world_var = IntVar()
@@ -247,22 +252,20 @@ top.rowconfigure(0, weight=5, minsize=40)
 top.columnconfigure(0, weight=1)
 top.grid(row=0, column=1, sticky=N + W + E, padx=5, pady=5)
 # button to select input file
-input_btn = Button(
+Button(
     top,
     text="Select file",
     command=choose_source,
     foreground="black",
-)
-input_btn.grid(row=0, column=0, sticky=W, padx=5, pady=5)
+).grid(row=0, column=0, sticky=W, padx=5, pady=5)
 
 # button to select output destination
-output_btn = Button(
+Button(
     top,
     text="Output dir",
     command=choose_dest,
     foreground="black",
-)
-output_btn.grid(row=1, column=0, sticky=W, padx=5, pady=5)
+).grid(row=1, column=0, sticky=W, padx=5, pady=5)
 
 # label to display chosen file
 input_lbl = Label(top, textvariable=source_var, fg="blue")
@@ -272,6 +275,7 @@ input_lbl.grid(row=0, column=1, sticky=E, padx=5, pady=5)
 output_lbl = Label(top, textvariable=destination_var, fg="blue")
 output_lbl.grid(row=1, column=1, sticky=E, padx=5, pady=5)
 
+
 # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
 
 # FRAME
@@ -279,47 +283,40 @@ control_frame = LabelFrame(options_frame, text="operations")
 control_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
-plot_chk = Checkbutton(
+Checkbutton(
     control_frame,
     text="classification view",
     variable=plot_var,
     command=plot_checked,
-)
-plot_chk.grid(row=0, column=0, sticky=NW)
+).pack(anchor=W)
 
-gradient_chk = Checkbutton(
+Checkbutton(
     control_frame,
     text="ground gradient",
     variable=gradient_var,
-)
-gradient_chk.grid(row=1, column=0, sticky=NW)
+).pack(anchor=W)
 
-ground_intensity_chk = Checkbutton(
+Checkbutton(
     control_frame,
     text="ground intensity",
     variable=ground_intensity_var,
-)
-ground_intensity_chk.grid(row=2, column=0, sticky=NW)
+).pack(anchor=W)
 
-highVeg_shaded_chk = Checkbutton(
+Checkbutton(
     control_frame,
     text="highVeg (shaded)",
     variable=highVeg_shaded_var,
-)
-highVeg_shaded_chk.grid(row=3, column=0, sticky=NW)
+).pack(anchor=W)
 
-composite_chk = Checkbutton(
+Checkbutton(
     control_frame, text="composite image", variable=composite_var, state=DISABLED
-)
-composite_chk.grid(row=4, column=0, sticky=NW)
+).pack(anchor=W)
 
-print_chk = Checkbutton(
+Checkbutton(
     control_frame,
     text="print info to console",
     variable=print_var,
-)
-print_chk.grid(row=5, column=0, sticky=NW)
-
+).pack(anchor=W)
 # FRAME
 gis_frame = LabelFrame(options_frame, text="GIS")
 gis_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=5, pady=5)
@@ -329,14 +326,12 @@ world_chk = Checkbutton(
     text="generate world file",
     variable=world_var,
 )
-world_chk.grid(row=5, column=0, sticky=NW)
+world_chk.pack(anchor=W)
 
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
 # FRAME
-img_settings_frame = LabelFrame(options_frame, text="image")
-img_settings_frame.columnconfigure(0, weight=1)
-img_settings_frame.columnconfigure(1, weight=0)
+img_settings_frame = LabelFrame(options_frame, text="sizing")
 img_settings_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
@@ -358,13 +353,18 @@ preview_size_label.grid(row=5, column=0, sticky=W, padx=5, pady=5)
 preview_size_label = Entry(img_settings_frame, textvariable=preview_size_var, width=7)
 preview_size_label.grid(row=5, column=1, sticky=E, padx=5, pady=5)
 
+# FRAME (marker stype)
+marker_frame = LabelFrame(options_frame, text="marker style")
+marker_frame.grid(row=3, column=0, sticky=N + S + W + E, padx=5, pady=5)
+Radiobutton(marker_frame, text="pixel", variable=marker_var, value=",").pack(anchor=W)
+Radiobutton(marker_frame, text="point", variable=marker_var, value=".").pack(anchor=W)
+Radiobutton(marker_frame, text="circle", variable=marker_var, value="o").pack(anchor=W)
+Radiobutton(marker_frame, text="square", variable=marker_var, value="s").pack(anchor=W)
 # ---------------------------- CHOOSE PLOT SETTINGS ----------------------------
 
 # FRAME
 plot_frame = LabelFrame(options_frame, text="classifications")
-plot_frame.columnconfigure(0, weight=1)
-plot_frame.columnconfigure(1, weight=0)
-plot_frame.grid(row=3, column=0, sticky=N + S + W + E, padx=5, pady=5)
+plot_frame.grid(row=4, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # CONTROLS
 ground_chk = Checkbutton(
@@ -373,60 +373,54 @@ ground_chk = Checkbutton(
     variable=ground_var,
     state=DISABLED,
 )
-ground_chk.grid(row=0, column=0, sticky=NW)
-
+ground_chk.pack(anchor=W)
 buildings_chk = Checkbutton(
     plot_frame,
     text="buildings",
     variable=buildings_var,
     state=DISABLED,
 )
-buildings_chk.grid(row=1, column=0, sticky=NW)
-
+buildings_chk.pack(anchor=W)
 unclassified_chk = Checkbutton(
     plot_frame,
     text="unclassified",
     variable=unclassified_var,
     state=DISABLED,
 )
-unclassified_chk.grid(row=2, column=0, sticky=NW)
-
+unclassified_chk.pack(anchor=W)
 water_chk = Checkbutton(
     plot_frame,
     text="water",
     variable=water_var,
     state=DISABLED,
 )
-water_chk.grid(row=3, column=0, sticky=NW)
-
+water_chk.pack(anchor=W)
 lowVeg_chk = Checkbutton(
     plot_frame,
     text="low veg",
     variable=lowVeg_var,
     state=DISABLED,
 )
-lowVeg_chk.grid(row=4, column=0, sticky=NW)
-
+lowVeg_chk.pack(anchor=W)
 mediumVeg_chk = Checkbutton(
     plot_frame,
     text="medium veg",
     variable=mediumVeg_var,
     state=DISABLED,
 )
-mediumVeg_chk.grid(row=5, column=0, sticky=NW)
-
+mediumVeg_chk.pack(anchor=W)
 highVeg_chk = Checkbutton(
     plot_frame,
     text="high veg",
     variable=highVeg_var,
     state=DISABLED,
 )
-highVeg_chk.grid(row=6, column=0, sticky=NW)
+highVeg_chk.pack(anchor=W)
 
 
 # ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
 # GO button config
-begin_btn = Button(
+Button(
     top,
     text="BEGIN",
     command=handler,
@@ -434,13 +428,12 @@ begin_btn = Button(
     foreground="white",
     padx=5,
     pady=5,
-)
-begin_btn.grid(row=0, column=3, rowspan=2, sticky=N + S + W + E, padx=5, pady=5)
+).grid(row=0, column=3, rowspan=2, sticky=N + S + W + E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE IMAGE TO VIEW ----------------------------
 # FRAME
 control_frame = LabelFrame(options_frame, text="view image")
-control_frame.grid(row=4, column=0, sticky=N + S + W + E, padx=5, pady=5)
+control_frame.grid(row=5, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
 # LISTBOX
 file_box = Listbox(control_frame)
