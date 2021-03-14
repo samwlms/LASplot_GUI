@@ -18,7 +18,7 @@ class WindowSelections:
         self.dpi = dpi
         self.las = File(self.input, mode="r")
 
-    def plt_setup(self):
+    def save_png(self, filename):
         # ensure the image is not distorted by using known file min/max
         plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
         plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
@@ -28,12 +28,23 @@ class WindowSelections:
         plt.axis("off")
         plt.tight_layout(pad=0.05)
 
+        fig = plt.gcf()
+        fig.set_size_inches(self.size, self.size)
+        fig.savefig(
+            self.output + filename,
+            dpi=self.dpi,
+            pad_inches=-1,
+            facecolor="black",
+        )
+        plt.clf()
+
 
 class GradientPlotter(WindowSelections):
-    def __init__(self, operation, input, output, size, dpi):
+    def __init__(self, operation, input, output, size, dpi, marker):
         super().__init__(input, output, size, dpi)
         self.operation = operation
         self.filename = "/" + operation + ".png"
+        self.marker = marker
         self.num_bands = 25
         self.bands = None
         self.colours = None
@@ -52,19 +63,10 @@ class GradientPlotter(WindowSelections):
 
         # plot the individual bands sequentially
         for b, c in zip(self.bands, self.colours):
-            plt.plot(*b, color=c, linestyle="none", marker=",")
+            plt.plot(*b, color=c, linestyle="none", marker=self.marker)
 
         # save the image to a given output
-        self.plt_setup()
-        fig = plt.gcf()
-        fig.set_size_inches(self.size, self.size)
-        fig.savefig(
-            self.output + self.filename,
-            dpi=self.dpi,
-            pad_inches=-1,
-            facecolor="black",
-        )
-        plt.clf()
+        self.save_png(self.filename)
 
         time_output = time.time() - start
         printer.saved(self.filename, time_output)
@@ -108,7 +110,6 @@ class GradientPlotter(WindowSelections):
         upper_bound = self.upper_limit(layer)
         # boolean mask representing all ground points in file
         valid_c = self.las.Classification == 2
-
         # boolean mask representing all points below the upper bound
         valid_upper = metric < upper_bound
 
@@ -179,11 +180,11 @@ class GradientPlotter(WindowSelections):
 
 
 class LayerPlotter(WindowSelections):
-    def __init__(self, input, output, size, dpi, plot_args):
+    def __init__(self, input, output, size, dpi, marker, plot_args):
         super().__init__(input, output, size, dpi)
         self.plot_args = plot_args
+        self.marker = marker
 
-    # plot the positional data and then save as PNG
     def plot(self):
         printer.plot_print()
 
@@ -200,9 +201,17 @@ class LayerPlotter(WindowSelections):
         }
 
         for arg in self.plot_args:
+            start = time.time()
             val = names_colours[str(arg)]
-            self.save_plot(*self.get_xy(arg), val[0], val[1])
 
+            # save the image to a given output
+            plt.plot(
+                *self.get_xy(arg), color=val[1], linestyle="none", marker=self.marker
+            )
+            self.save_png(val[0])
+
+            time_output = time.time() - start
+            printer.saved(val[0], time_output)
         printer.complete()
 
     def get_xy(self, classification):
@@ -213,34 +222,11 @@ class LayerPlotter(WindowSelections):
         y = self.las.Y[self.las.Classification == classification]
         return x, y
 
-    # save the plotted images
-    def save_plot(self, x_, y_, filename, color):
-        plt.plot(x_, y_, color=color, linestyle="none", marker=",")
-
-        start = time.time()
-
-        # save the image to a given output
-        self.plt_setup()
-        fig = plt.gcf()
-        fig.set_size_inches(self.size, self.size)
-        fig.savefig(
-            self.output + filename,
-            dpi=self.dpi,
-            bbox_inches=0,
-            pad_inches=-1,
-            facecolor="black",
-        )
-        plt.clf()
-
-        time_output = time.time() - start
-
-        # print the 'saved' status for file
-        printer.saved(filename, time_output)
-
 
 class VegShader(WindowSelections):
-    def __init__(self, input, output, size, dpi):
+    def __init__(self, input, output, size, dpi, marker):
         super().__init__(input, output, size, dpi)
+        self.marker = marker
         self.colours = None
         self.bands = None
         self.bands_required = 15
@@ -342,12 +328,13 @@ class VegShader(WindowSelections):
         increment = (1.0 - 0.3) / self.bands_required
         colours = ()
 
-        red = 0.1
+        red = 0.3
         green = 1.0
-        blue = 0.1
+        blue = 0.0
 
         for count in range(self.bands_required):
             green = round(green - increment, 3)
+            red = round(red - increment / 3, 3)
             band_colour = (red, green, blue)
             colours = colours + (band_colour,)
 
@@ -358,18 +345,11 @@ class VegShader(WindowSelections):
         # plot the individual bands sequentially
         for b, c in zip(self.bands, self.colours):
             try:
-                plt.plot(b[:, 0], b[:, 1], color=c, linestyle="none", marker=",")
+                plt.plot(
+                    b[:, 0], b[:, 1], color=c, linestyle="none", marker=self.marker
+                )
             except Exception as e:
                 print(e)
 
         # save the image to a given output
-        self.plt_setup()
-        fig = plt.gcf()
-        fig.set_size_inches(self.size, self.size)
-        fig.savefig(
-            self.output + "/shaded_veg.png",
-            dpi=self.dpi,
-            pad_inches=-1,
-            facecolor="black",
-        )
-        plt.clf()
+        self.save_png("/shaded_veg.png")
