@@ -18,6 +18,16 @@ class WindowSelections:
         self.dpi = dpi
         self.las = File(self.input, mode="r")
 
+    def plt_setup(self):
+        # ensure the image is not distorted by using known file min/max
+        plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
+        plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
+
+        # various output settings
+        plt.margins(0, 0)
+        plt.axis("off")
+        plt.tight_layout(pad=0.05)
+
 
 class GradientPlotter(WindowSelections):
     def __init__(self, operation, input, output, size, dpi):
@@ -44,16 +54,8 @@ class GradientPlotter(WindowSelections):
         for b, c in zip(self.bands, self.colours):
             plt.plot(*b, color=c, linestyle="none", marker=",")
 
-        # ensure the image is not distorted by using known file min/max
-        plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
-        plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
-
-        # various output settings
-        plt.margins(0, 0)
-        plt.axis("off")
-        plt.tight_layout(pad=0.05)
-
         # save the image to a given output
+        self.plt_setup()
         fig = plt.gcf()
         fig.set_size_inches(self.size, self.size)
         fig.savefig(
@@ -217,16 +219,8 @@ class LayerPlotter(WindowSelections):
 
         start = time.time()
 
-        # ensure the image is not distorted by using known file min/max
-        plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
-        plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
-
-        # various output settings
-        plt.margins(0, 0)
-        plt.axis("off")
-        plt.tight_layout(pad=0.05)
-
         # save the image to a given output
+        self.plt_setup()
         fig = plt.gcf()
         fig.set_size_inches(self.size, self.size)
         fig.savefig(
@@ -360,9 +354,6 @@ class VegShader(WindowSelections):
         self.colours = colours
 
     def plot_bands(self):
-        # ensure the image is not distorted by using known file min/max
-        plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
-        plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
 
         # plot the individual bands sequentially
         for b, c in zip(self.bands, self.colours):
@@ -371,12 +362,8 @@ class VegShader(WindowSelections):
             except Exception as e:
                 print(e)
 
-        # various output settings
-        plt.margins(0, 0)
-        plt.axis("off")
-        plt.tight_layout(pad=0.05)
-
         # save the image to a given output
+        self.plt_setup()
         fig = plt.gcf()
         fig.set_size_inches(self.size, self.size)
         fig.savefig(
