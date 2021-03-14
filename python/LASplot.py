@@ -119,7 +119,10 @@ def handler():
 
         # if 'gradient' option is selected
         if gradient_var.get() == 1:
-            banding_functions.main("gradient", source, destination, size, dpi)
+            plotter = plotters.GradientPlotter(
+                "gradient", source, destination, size, dpi
+            )
+            plotter.plot_gradient()
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
@@ -133,7 +136,10 @@ def handler():
 
         # if 'ground intensity' option is selected
         if ground_intensity_var.get() == 1:
-            banding_functions.main("intensity", source, destination, size, dpi)
+            plotter = plotters.GradientPlotter(
+                "intensity", source, destination, size, dpi
+            )
+            plotter.plot_gradient()
 
         # if 'generate world files' option is selected
         if world_var.get() == 1:
