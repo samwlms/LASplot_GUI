@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, banding_functions, shaded_veg, world, os
+import plot, printer, banding_functions, plotters, world, os
 
 
 # allows user to select a las file input
@@ -140,7 +140,8 @@ def handler():
 
         # if 'highVeg shaded' option is selected
         if highVeg_shaded_var.get() == 1:
-            shaded_veg.plot_shaded(source, destination, size_int, dpi_int)
+            shader = plotters.VegShader(source, destination, size_int, dpi_int)
+            shader.plot_shaded()
             print("OPERATION: 'highVeg shaded' selected")
 
         # get all image files at the output dir and make a list
