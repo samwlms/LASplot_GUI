@@ -19,6 +19,163 @@ class WindowSelections:
         self.las = File(self.input, mode="r")
 
 
+class GradientPlotter(WindowSelections):
+    def __init__(self, operation, input, output, size, dpi):
+        super().__init__(input, output, size, dpi)
+        self.operation = operation
+        self.filename = "/" + operation + ".png"
+        self.num_bands = 25
+        self.bands = None
+        self.colours = None
+
+    # plot the positional data and then save as PNG
+    def plot_gradient(self):
+        start = time.time()
+
+        if self.operation == "gradient":
+            printer.gradient_print()
+        elif self.operation == "intensity":
+            printer.intensity_print()
+
+        self.generate_bands()
+        self.generate_colours()
+
+        # plot the individual bands sequentially
+        for b, c in zip(self.bands, self.colours):
+            plt.plot(*b, color=c, linestyle="none", marker=",")
+
+        # ensure the image is not distorted by using known file min/max
+        plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
+        plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
+
+        # various output settings
+        plt.margins(0, 0)
+        plt.axis("off")
+        plt.tight_layout(pad=0.05)
+
+        # save the image to a given output
+        fig = plt.gcf()
+        fig.set_size_inches(self.size, self.size)
+        fig.savefig(
+            self.output + self.filename,
+            dpi=self.dpi,
+            pad_inches=-1,
+            facecolor="black",
+        )
+        plt.clf()
+
+        time_output = time.time() - start
+        printer.saved(self.filename, time_output)
+        printer.complete()
+
+    def upper_limit(self, layer):
+
+        """
+        function that returns the upper Z bound of a colour band.
+        this function takes a given number of bands (divisions),
+        a band number (layer) to determine the upper bound of that band
+        """
+
+        if self.operation == "gradient":
+            metric = self.las.Z[self.las.Classification == 2]
+        elif self.operation == "intensity":
+            metric = self.las.intensity[self.las.Classification == 2]
+
+        # the difference between the highest and lowest point
+        metric_delta = np.amax(metric) - np.amin(metric)
+
+        # return the upper bound for the band
+        return int(np.amin(metric) + ((metric_delta / self.num_bands) * layer))
+
+    def get_band(self, layer):
+
+        """
+        function that returns the X,Y values for points within
+        a specified depth band. This function takes a given
+        number of divisions (total layers) and a desired layer
+        index to determine the valid points that fall within
+        the high/low bounds for a depth band
+        """
+
+        if self.operation == "gradient":
+            metric = self.las.Z
+        elif self.operation == "intensity":
+            metric = self.las.intensity
+
+        # the derived upper bound for the given depth band
+        upper_bound = self.upper_limit(layer)
+        # boolean mask representing all ground points in file
+        valid_c = self.las.Classification == 2
+
+        # boolean mask representing all points below the upper bound
+        valid_upper = metric < upper_bound
+
+        if layer == 1:
+            # boolean mask which represents all points in the band
+            all_valid = np.logical_and(valid_c, valid_upper)
+        else:
+            # determine the lower bound for the given band
+            lower_bound = self.upper_limit(layer - 1)
+            # boolean mask representing all points above the lower bound
+            valid_lower = metric > lower_bound
+            # boolean mask representing all points within the bounds (all)
+            valid_bounds = np.logical_and(valid_upper, valid_lower)
+            # boolean mask which represents all points in the band (ground)
+            all_valid = np.logical_and(valid_c, valid_bounds)
+
+        # return the X, Y coords for all valid points in the band
+        return self.las.X[all_valid], self.las.Y[all_valid]
+
+    def generate_colours(self):
+
+        """
+        generate a tuple (of tuples) containing RGB values for individual colour bands.
+        rather than using a sine wave function to calculate RGB values, a simpler method
+        was implemented.See the documentation for a visual representation of the colour value theory.
+        """
+
+        colours = ()
+        bands = self.num_bands
+
+        # the distinct quartered disvisons used to evaluate RGB values
+        Q1 = bands / 4.0
+        Q2 = bands / 2.0
+        Q3 = Q1 + Q2
+        Q4 = bands
+
+        for count in range(0, bands):
+            # (1/4) red to yellow
+            if count <= Q1:
+                red = 0.0
+                green = round(count / (bands / 4), 1)
+                blue = 1.0
+            # (2/4) yellow to green
+            elif count > Q1 and count <= Q2:
+                red = 0.0
+                blue = round(2 - (count / (bands / 4)), 1)
+                green = 1.0
+            # (3/4) green to aqua
+            elif count > Q2 and count <= Q3:
+                red = round((count / (bands / 4) - 2), 1)
+                green = 1.0
+                blue = 0.0
+            # (4/4) aqua to blue
+            elif count > Q3:
+                red = 1.0
+                green = round(4 - (count / (bands / 4)), 1)
+                blue = 0.0
+
+            colours = colours + ((red, green, blue),)
+        self.colours = colours
+
+    def generate_bands(self):
+        final_bands = ()
+        for count in range(0, self.num_bands):
+            current_band = self.get_band(count)
+            final_bands = final_bands + ((current_band),)
+        self.bands = final_bands
+
+
 class LayerPlotter(WindowSelections):
     def __init__(self, input, output, size, dpi, plot_args):
         super().__init__(input, output, size, dpi)
