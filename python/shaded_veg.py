@@ -103,12 +103,12 @@ def generate_band_colours(bands_required):
     1.0 - 0.35 / number of bands
     """
 
-    increment = (1.0 - 0.2) / bands_required
+    increment = (1.0 - 0.3) / bands_required
     colours = ()
 
-    red = 0.0
+    red = 0.1
     green = 1.0
-    blue = 0.0
+    blue = 0.1
 
     for count in range(bands_required):
         green = round(green - increment, 3)
