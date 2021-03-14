@@ -20,20 +20,14 @@ class WindowSelections:
 
 
 class LayerPlotter(WindowSelections):
-
-    # get the positional data of points in a specified classification
-    def get_xy(self, classification):
-        x = self.las.X[self.las.Classification == classification]
-        y = self.las.Y[self.las.Classification == classification]
-        return x, y
+    def __init__(self, input, output, size, dpi, plot_args):
+        super().__init__(input, output, size, dpi)
+        self.plot_args = plot_args
 
     # plot the positional data and then save as PNG
-    def plot(self, plot_args):
-
-        # print console heading for process
+    def plot(self):
         printer.plot_print()
-
-        for arg in plot_args:
+        for arg in self.plot_args:
             if arg == 1:
                 self.save_plot(*self.get_xy(arg), "/unclassified.png", "m")
             elif arg == 2:
@@ -48,9 +42,15 @@ class LayerPlotter(WindowSelections):
                 self.save_plot(*self.get_xy(arg), "/buildings.png", "White")
             elif arg == 9:
                 self.save_plot(*self.get_xy(arg), "/water.png", "DodgerBlue")
-
-        # indicate completion in console
         printer.complete()
+
+    def get_xy(self, classification):
+        """
+        get the X/Y positional data for points of a specified classification
+        """
+        x = self.las.X[self.las.Classification == classification]
+        y = self.las.Y[self.las.Classification == classification]
+        return x, y
 
     # save the plotted images
     def save_plot(self, x_, y_, filename, color):
@@ -66,7 +66,6 @@ class LayerPlotter(WindowSelections):
         plt.margins(0, 0)
         plt.axis("off")
         plt.tight_layout(pad=0.05)
-        plt.gca().set_facecolor("black")
 
         # save the image to a given output
         fig = plt.gcf()
@@ -91,6 +90,50 @@ class VegShader(WindowSelections):
         super().__init__(input, output, size, dpi)
         self.colours = None
         self.bands = None
+        self.bands_required = 15
+
+    def plot_shaded(self):
+        printer.shaded_print()
+        start = time.time()
+
+        # make some 2D arrays representing high vegetation and ground points
+        veg = np.vstack(
+            [
+                self.las.X[self.las.Classification == 5],
+                self.las.Y[self.las.Classification == 5],
+                self.las.Z[self.las.Classification == 5],
+            ]
+        ).transpose()
+        ground = np.vstack(
+            [
+                self.las.X[self.las.Classification == 2],
+                self.las.Y[self.las.Classification == 2],
+                self.las.Z[self.las.Classification == 2],
+            ]
+        ).transpose()
+
+        # generate a KD Tree of the ground points
+        ground_tree = KDTree(ground)
+
+        # get the Z scale of the las file for height calculation
+        scale = self.las.header.scale[2]
+
+        # 2D array with the Z component representing relative height from ground
+        veg_with_height = np.vstack(
+            [
+                self.las.X[self.las.Classification == 5],
+                self.las.Y[self.las.Classification == 5],
+                [self.get_height(ground_tree, ground, point) * scale for point in veg],
+            ]
+        ).transpose()
+
+        self.generate_veg_bands(veg_with_height)
+        self.generate_band_colours()
+        self.plot_bands()
+
+        time_output = time.time() - start
+        printer.saved("/shaded_veg.png", time_output)
+        printer.complete()
 
     def get_height(self, ground_tree, ground, point):
         """
@@ -103,7 +146,7 @@ class VegShader(WindowSelections):
         distance_from_ground = point[2] - closest_point[2]
         return distance_from_ground
 
-    def generate_veg_bands(self, veg_points, bands_required):
+    def generate_veg_bands(self, veg_points):
         """
         function that generates n number of bands (containing sorted high veg points).
         The metric that determines band assignment is the vertical (z) distance from
@@ -115,12 +158,12 @@ class VegShader(WindowSelections):
         a potential solution to this problem.
         """
         bands = ()
-        for height in range(bands_required):
+        for height in range(self.bands_required):
             # for the first band, include all points < 2m high
             if height == 0:
                 valid = veg_points[:, 2] < height
             # for the final band, include all points > height
-            elif height == bands_required - 1:
+            elif height == self.bands_required - 1:
                 valid = veg_points[:, 2] >= height
             else:
                 upper_limit = veg_points[:, 2] < height + 1
@@ -131,7 +174,7 @@ class VegShader(WindowSelections):
 
         self.bands = bands
 
-    def generate_band_colours(self, bands_required):
+    def generate_band_colours(self):
         """
         green RGB range will be from:
         [0, 100, 0](light green) -> [0, 255, 0](dark green)
@@ -143,14 +186,14 @@ class VegShader(WindowSelections):
         1.0 - 0.35 / number of bands
         """
 
-        increment = (1.0 - 0.3) / bands_required
+        increment = (1.0 - 0.3) / self.bands_required
         colours = ()
 
         red = 0.1
         green = 1.0
         blue = 0.1
 
-        for count in range(bands_required):
+        for count in range(self.bands_required):
             green = round(green - increment, 3)
             band_colour = (red, green, blue)
             colours = colours + (band_colour,)
@@ -184,52 +227,3 @@ class VegShader(WindowSelections):
             facecolor="black",
         )
         plt.clf()
-
-    def plot_shaded(self):
-        start = time.time()
-        veg = np.vstack(
-            [
-                self.las.X[self.las.Classification == 5],
-                self.las.Y[self.las.Classification == 5],
-                self.las.Z[self.las.Classification == 5],
-            ]
-        ).transpose()
-
-        ground = np.vstack(
-            [
-                self.las.X[self.las.Classification == 2],
-                self.las.Y[self.las.Classification == 2],
-                self.las.Z[self.las.Classification == 2],
-            ]
-        ).transpose()
-
-        ground_tree = KDTree(ground)
-
-        heights = []
-
-        for point in veg:
-            height = round(self.get_height(ground_tree, ground, point) * 0.01, 2)
-            heights.append(height)
-
-        veg_with_height = np.vstack(
-            [
-                self.las.X[self.las.Classification == 5],
-                self.las.Y[self.las.Classification == 5],
-                heights,
-            ]
-        ).transpose()
-
-        bands_required = 15
-
-        self.generate_veg_bands(veg_with_height, bands_required)
-        self.generate_band_colours(bands_required)
-
-        self.plot_bands()
-
-        time_output = time.time() - start
-
-        # print the 'saved' status in console
-        printer.saved("/shaded_veg.png", time_output)
-
-        # indicate completion in console
-        printer.complete()
