@@ -112,9 +112,10 @@ def handler():
 
         # if 'layer' option is selected
         if plot_var.get() == 1:
+            layers = get_plot_args()
             # plot the images to PNG
-            plotter = plotters.LayerPlotter(source, destination, size, dpi)
-            plotter.plot(get_plot_args())
+            plotter = plotters.LayerPlotter(source, destination, size, dpi, layers)
+            plotter.plot()
 
         # if 'gradient' option is selected
         if gradient_var.get() == 1:
