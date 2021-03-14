@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import printer, banding_functions, plotters, world, os
+import printer, plotters, world, os
 
 
 # allows user to select a las file input
