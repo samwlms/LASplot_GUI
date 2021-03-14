@@ -10,14 +10,16 @@ import time
 import matplotlib.pyplot as plt
 
 
-class LayerPlotter:
-    def __init__(self, input, output, size, dpi, plot_args):
+class WindowSelections:
+    def __init__(self, input, output, size, dpi):
         self.input = input
         self.output = output
         self.size = size
         self.dpi = dpi
-        self.plot_args = plot_args
         self.las = File(self.input, mode="r")
+
+
+class LayerPlotter(WindowSelections):
 
     # get the positional data of points in a specified classification
     def get_xy(self, classification):
@@ -26,12 +28,12 @@ class LayerPlotter:
         return x, y
 
     # plot the positional data and then save as PNG
-    def plot(self):
+    def plot(self, plot_args):
 
         # print console heading for process
         printer.plot_print()
 
-        for arg in self.plot_args:
+        for arg in plot_args:
             if arg == 1:
                 self.save_plot(*self.get_xy(arg), "/unclassified.png", "m")
             elif arg == 2:
