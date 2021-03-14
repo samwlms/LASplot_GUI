@@ -56,7 +56,7 @@ Using the gradient functionality / option in the GUI, users are ables to quickly
 #### Contour
 _Represents the elevation changes within a tile that are characterised by distinct (user defined) elevation intervals. The highest and lowest points of a file are not considered, therefore: a near flat tile will be represented using a single colour._
 
-## Ground and Vegetation intensity analysis:
+## Ground intensity analysis:
 
 **With the following options, users may visualise the return intensity for point records within a file. This is useful for identifying road features and changes in ground layer terrain makeup**
 
@@ -72,6 +72,12 @@ General image options:
 - 'DPI' *the detail of the output image*
 - 'Preview size' *the size of the image rendered in the window (in pixels)*
 
+Plotting marker options:
+- Pixel (plot each point as a single pixel)
+- Point (plot each point as a small, fixed size point)
+- Circle (larger plots in shape of a circle)
+- Square (larger points in shape of a square)
+
 Plot options:
 - Select which layers to plot *(based on LAS point record classification)*
 
@@ -79,7 +85,6 @@ With options to generate the following image files:
 - [x] 'plots' *individual layers, separated by LAS classification*
 - [x] 'terrain gradient' *elevation gradient showing a the high and low points of the file*
 - [x] 'terrain intensity' *representation of the point record intensity associated with ground classification*
-- [x] 'vegetation intensity' *representation of the point record intensity associated with vegetation classification*
 - [ ] 'terrain contour' *(2 color) banding to reflect relative changes in local ground elevation*
 - [ ] 'composite image' *main classification layers painted in appropriate colours (single image)*
 - [x] 'file information' *general information about the file and header specifications*
