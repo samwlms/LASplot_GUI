@@ -10,6 +10,80 @@ import time
 import matplotlib.pyplot as plt
 
 
+class LayerPlotter:
+    def __init__(self, input, output, size, dpi, plot_args):
+        self.input = input
+        self.output = output
+        self.size = size
+        self.dpi = dpi
+        self.plot_args = plot_args
+        self.las = File(self.input, mode="r")
+
+    # get the positional data of points in a specified classification
+    def get_xy(self, classification):
+        x = self.las.X[self.las.Classification == classification]
+        y = self.las.Y[self.las.Classification == classification]
+        return x, y
+
+    # plot the positional data and then save as PNG
+    def plot(self):
+
+        # print console heading for process
+        printer.plot_print()
+
+        for arg in self.plot_args:
+            if arg == 1:
+                self.save_plot(*self.get_xy(arg), "/unclassified.png", "m")
+            elif arg == 2:
+                self.save_plot(*self.get_xy(arg), "/ground.png", "SaddleBrown")
+            elif arg == 3:
+                self.save_plot(*self.get_xy(arg), "/lowVeg.png", "LimeGreen")
+            elif arg == 4:
+                self.save_plot(*self.get_xy(arg), "/mediumVeg.png", "Green")
+            elif arg == 5:
+                self.save_plot(*self.get_xy(arg), "/highVeg.png", "DarkGreen")
+            elif arg == 6:
+                self.save_plot(*self.get_xy(arg), "/buildings.png", "White")
+            elif arg == 9:
+                self.save_plot(*self.get_xy(arg), "/water.png", "DodgerBlue")
+
+        # indicate completion in console
+        printer.complete()
+
+    # save the plotted images
+    def save_plot(self, x_, y_, filename, color):
+        plt.plot(x_, y_, color=color, linestyle="none", marker=",")
+
+        start = time.time()
+
+        # ensure the image is not distorted by using known file min/max
+        plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
+        plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
+
+        # various output settings
+        plt.margins(0, 0)
+        plt.axis("off")
+        plt.tight_layout(pad=0.05)
+        plt.gca().set_facecolor("black")
+
+        # save the image to a given output
+        fig = plt.gcf()
+        fig.set_size_inches(self.size, self.size)
+        fig.savefig(
+            self.output + filename,
+            dpi=self.dpi,
+            bbox_inches=0,
+            pad_inches=-1,
+            facecolor="black",
+        )
+        plt.clf()
+
+        time_output = time.time() - start
+
+        # print the 'saved' status for file
+        printer.saved(filename, time_output)
+
+
 class VegShader:
     def __init__(self, input, output, size, dpi):
         self.input = input
@@ -87,9 +161,9 @@ class VegShader:
         self.colours = colours
 
     def plot_bands(self):
-        # get the min/max X,Y values to normalise the plot scale
-        x_min, x_max = np.amin(self.las.X), np.amax(self.las.X)
-        y_min, y_max = np.amin(self.las.Y), np.amax(self.las.Y)
+        # ensure the image is not distorted by using known file min/max
+        plt.xlim(np.amin(self.las.X), np.amax(self.las.X))
+        plt.ylim(np.amin(self.las.Y), np.amax(self.las.Y))
 
         # plot the individual bands sequentially
         for b, c in zip(self.bands, self.colours):
@@ -97,10 +171,6 @@ class VegShader:
                 plt.plot(b[:, 0], b[:, 1], color=c, linestyle="none", marker=",")
             except Exception as e:
                 print(e)
-
-        # ensure the image is not distorted by using known file min/max
-        plt.xlim(x_min, x_max)
-        plt.ylim(y_min, y_max)
 
         # various output settings
         plt.margins(0, 0)
@@ -116,8 +186,6 @@ class VegShader:
             pad_inches=-1,
             facecolor="black",
         )
-
-        # clear the image from meory
         plt.clf()
 
     def plot_shaded(self):
