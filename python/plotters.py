@@ -27,21 +27,23 @@ class LayerPlotter(WindowSelections):
     # plot the positional data and then save as PNG
     def plot(self):
         printer.plot_print()
+
+        # dict containing the names/ colours of various classification
+        # layers, where the key maps with the LAS spec classification.
+        names_colours = {
+            "1": ["/unclassified.png", "m"],
+            "2": ["/ground.png", "SaddleBrown"],
+            "3": ["/lowVeg.png", "LimeGreen"],
+            "4": ["/mediumVeg.png", "Green"],
+            "5": ["/highVeg.png", "DarkGreen"],
+            "6": ["/buildings.png", "White"],
+            "9": ["/water.png", "DodgerBlue"],
+        }
+
         for arg in self.plot_args:
-            if arg == 1:
-                self.save_plot(*self.get_xy(arg), "/unclassified.png", "m")
-            elif arg == 2:
-                self.save_plot(*self.get_xy(arg), "/ground.png", "SaddleBrown")
-            elif arg == 3:
-                self.save_plot(*self.get_xy(arg), "/lowVeg.png", "LimeGreen")
-            elif arg == 4:
-                self.save_plot(*self.get_xy(arg), "/mediumVeg.png", "Green")
-            elif arg == 5:
-                self.save_plot(*self.get_xy(arg), "/highVeg.png", "DarkGreen")
-            elif arg == 6:
-                self.save_plot(*self.get_xy(arg), "/buildings.png", "White")
-            elif arg == 9:
-                self.save_plot(*self.get_xy(arg), "/water.png", "DodgerBlue")
+            val = names_colours[str(arg)]
+            self.save_plot(*self.get_xy(arg), val[0], val[1])
+
         printer.complete()
 
     def get_xy(self, classification):
