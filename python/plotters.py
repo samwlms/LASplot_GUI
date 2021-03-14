@@ -86,16 +86,11 @@ class LayerPlotter(WindowSelections):
         printer.saved(filename, time_output)
 
 
-class VegShader:
+class VegShader(WindowSelections):
     def __init__(self, input, output, size, dpi):
-        self.input = input
-        self.output = output
-        self.size = size
-        self.dpi = dpi
-        self.las = File(self.input, mode="r")
+        super().__init__(input, output, size, dpi)
         self.colours = None
         self.bands = None
-        self.filename = "/shaded_veg.png"
 
     def get_height(self, ground_tree, ground, point):
         """
@@ -183,7 +178,7 @@ class VegShader:
         fig = plt.gcf()
         fig.set_size_inches(self.size, self.size)
         fig.savefig(
-            self.output + self.filename,
+            self.output + "/shaded_veg.png",
             dpi=self.dpi,
             pad_inches=-1,
             facecolor="black",
@@ -234,7 +229,7 @@ class VegShader:
         time_output = time.time() - start
 
         # print the 'saved' status in console
-        printer.saved(self.filename, time_output)
+        printer.saved("/shaded_veg.png", time_output)
 
         # indicate completion in console
         printer.complete()
