@@ -5,7 +5,7 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import plot, printer, banding_functions, plotters, world, os
+import printer, banding_functions, plotters, world, os
 
 
 # allows user to select a las file input
@@ -100,9 +100,9 @@ def handler():
         # user variables
         source = source_var.get()
         destination = destination_var.get()
-        size_int = int(size_var.get())
+        size = int(size_var.get())
         preview_size_int = int(preview_size_var.get())
-        dpi_int = int(dpi_var.get())
+        dpi = int(dpi_var.get())
 
         # delete existing filenames in the listbox
         file_box.delete(0, END)
@@ -113,11 +113,12 @@ def handler():
         # if 'layer' option is selected
         if plot_var.get() == 1:
             # plot the images to PNG
-            plot.plot(source, destination, size_int, dpi_int, get_plot_args())
+            plotter = plotters.LayerPlotter(source, destination, size, dpi)
+            plotter.plot(get_plot_args())
 
         # if 'gradient' option is selected
         if gradient_var.get() == 1:
-            banding_functions.main("gradient", source, destination, size_int, dpi_int)
+            banding_functions.main("gradient", source, destination, size, dpi)
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
@@ -131,7 +132,7 @@ def handler():
 
         # if 'ground intensity' option is selected
         if ground_intensity_var.get() == 1:
-            banding_functions.main("intensity", source, destination, size_int, dpi_int)
+            banding_functions.main("intensity", source, destination, size, dpi)
 
         # if 'generate world files' option is selected
         if world_var.get() == 1:
@@ -140,7 +141,7 @@ def handler():
 
         # if 'highVeg shaded' option is selected
         if highVeg_shaded_var.get() == 1:
-            shader = plotters.VegShader(source, destination, size_int, dpi_int)
+            shader = plotters.VegShader(source, destination, size, dpi)
             shader.plot_shaded()
             print("OPERATION: 'highVeg shaded' selected")
 
