@@ -1,45 +1,59 @@
-# LASplot - *LiDAR visualisation tools*
-## Multipurpose LiDAR analysis software built with Python (using Tkinter framework and Laspy)
+# LASplot - *LiDAR Visualization Tools*
+### Multipurpose LiDAR analysis software built with Python (using Tkinter framework and Laspy)
 
-![terrain image](https://github.com/samwlms/LASplot_GUI/blob/main/images/terrain.PNG)
 
 ## Overview
 LASplot is an ongoing work-in-progress and learning exercise which I have undertaken in order to improve my Python programming skills, while also learning more about LiDAR technologies. I am aware that there are many existing (more powerful) tools out there that can do much of what LASplot does. Please feel free to fork the main branch and add any features you'd like. I am more than open to feedback and collaboration.
 
 For any questions/ concerns/ feedback about the software, shoot me an email me at: swilliams9@uon.edu.au
 
-## Running LASplot - requirements and information
+### Running LASplot - requirements and information
 
-_**How to run the LASplot application on your machine**_
+###### _**How to run the LASplot application on your machine**_
 
-### Installation
+#### Installation
 
 If you are running the application for the first time, simply click on **'install.bat'** to initialise the application virtual environment, and install necessary dependencies.
 
-### Running the application
+#### Running the application
 Once installed, the standard launch point for the application is **'run_program.bat'**. Using this method will run LASplot from the python virtual environment and help ensure cross-system compatibility.
 
-##### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3)_
+###### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3)_
 
-## Point classification separation and plot:
-Allows users the ability to quickly visualise individual classification layers for the purposes of *per tile* quality control and QA. Use cases include:
+![terrain image](https://github.com/samwlms/LASplot_GUI/blob/main/images/terrain.PNG)
+
+## Visualization options
+
+### Point classification separation and plot:
+###### *Speed: fast (0.2 - 0.5s)*
+Allows users the ability to quickly visualise individual classification layers for the purposes of *per tile* quality control and QA.
+
+Use cases include:
 - quickly assessing high-vegetation and building noise contamination
 - viewing the relative makeup of the file (residential, rural, city, etc.)
 
 ![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/plot.PNG)
 
-## Shaded vegetation option
+### Composite image generation
+###### *Speed: fast (0.3 - 0.8s)*
+Using the layer selection pane, users can generate custom images with various LAS classifications included in the plot. These composite images provide a much more complete view of the tile - and allow for a quick snapshot of the file as a whole. 
 
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/composite.PNG)
+
+
+### Shaded vegetation option
+###### *Speed: slow (10 - 15s)*
 LASplot can now generate shaded vegetation imagery. The algorithm will shade high vegetation points on a colour gradient by considering their individual distance from ground. This option takes a little longer to generate images (approx 10 seconds, depending on specified output arguments), but is still quite optimized for a Python approach. Using the inbuilt GUI image generation arguments (DPI + Size), it is possible to generate useful snapshots for analysis at any scale.
 
 ![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/shaded_veg.png)
 
 
-## Ground layer terrain analysis:
+### Ground layer terrain analysis:
+###### *Speed: fast-med (2 - 4s)*
 
 _**With the following options, users may visualise both relative and/ or absolute variance in terrain elevation**_
 
-#### Gradient
+##### Gradient
 _Represents the relative changes in ground elevation by marking elevation changes between the highest and lowest points on a given tile. The highest point on the tile will always be red (255, 0, 0), and conversely the lowest point will always be blue (0, 0, 255)_
 
 ![gradient image](https://github.com/samwlms/LASplot_GUI/blob/main/images/gradient.PNG)
@@ -53,17 +67,18 @@ Using the gradient functionality / option in the GUI, users are ables to quickly
 
 ![colour theory image](https://github.com/samwlms/LASplot_GUI/blob/main/images/RGB_value_relationships.png)
 
-#### Contour
+##### Contour
 _Represents the elevation changes within a tile that are characterised by distinct (user defined) elevation intervals. The highest and lowest points of a file are not considered, therefore: a near flat tile will be represented using a single colour._
 
-## Ground intensity analysis:
+### Ground intensity analysis:
+###### *Speed: fast-med (2 - 4s)*
 
 **With the following options, users may visualise the return intensity for point records within a file. This is useful for identifying road features and changes in ground layer terrain makeup**
 
 ![intensity image](https://github.com/samwlms/LASplot_GUI/blob/main/images/intensity.png)
 
 
-## Custom output settings for PNG files
+## Output settings for PNG files
 
 _**User controls to change the output configuration of generated images**_
 
@@ -97,4 +112,3 @@ _**Las specific data processing is handled by *[Laspy](https://laspy.readthedocs
 
 - [ ] Compress/ Decompress data (LAS <-> LAZ)
 - [ ] Header validation
-
