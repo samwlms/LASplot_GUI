@@ -186,18 +186,21 @@ class LayerPlotter(WindowSelections):
         self.operation = operation
 
     def plot(self):
-        printer.plot_print()
+        if self.operation == "plot":
+            printer.plot_print()
+        else:
+            printer.composite_print()
 
         # dict containing the names/ colours of various classification
         # layers, where the key maps with the LAS spec classification.
         names_colours = {
-            "1": ["/unclassified.png", "m"],
-            "2": ["/ground.png", "SaddleBrown"],
+            "1": ["/unclassified.png", "violet"],
+            "2": ["/ground.png", "saddlebrown"],
             "3": ["/lowVeg.png", "LimeGreen"],
-            "4": ["/mediumVeg.png", "Green"],
-            "5": ["/highVeg.png", "DarkGreen"],
+            "4": ["/mediumVeg.png", "LimeGreen"],
+            "5": ["/highVeg.png", "green"],
             "6": ["/buildings.png", "White"],
-            "9": ["/water.png", "DodgerBlue"],
+            "9": ["/water.png", "deepskyblue"],
         }
 
         for arg in self.plot_args:
@@ -208,10 +211,15 @@ class LayerPlotter(WindowSelections):
             plt.plot(
                 *self.get_xy(arg), color=val[1], linestyle="none", marker=self.marker
             )
-            self.save_png(val[0])
-
+            if self.operation == "plot":
+                self.save_png(val[0])
+                time_output = time.time() - start
+                printer.saved(val[0], time_output)
+        if self.operation == "composite":
+            filename = "/composite"
+            self.save_png(filename)
             time_output = time.time() - start
-            printer.saved(val[0], time_output)
+            printer.saved(filename, time_output)
         printer.complete()
 
     def get_xy(self, classification):
