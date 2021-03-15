@@ -178,6 +178,23 @@ def handler():
         print("ERROR: please select valid input/ output directory")
 
 
+# set the style for the application
+def set_style(parent):
+    for child in parent.winfo_children():
+        c_class = child.winfo_class()
+        name = child.winfo_name()
+        if c_class == "Checkbutton" or c_class == "Radiobutton":
+            child.configure(selectcolor="black")
+        if name != "top_panel" and name != "png_display":
+            child.configure(fg="white")
+            if c_class != ("Button" or "Listbox"):
+                child.configure(bg="gray20")
+            if c_class == "Listbox":
+                child.configure(bg="gray30")
+
+            set_style(child)
+
+
 # -----------------------------------------------------------------------------
 # --------------------------GUI CONFIGURATION AND LAYOUT-----------------------
 # -----------------------------------------------------------------------------
@@ -196,11 +213,11 @@ destination_var = StringVar()
 dpi_var = StringVar()
 dpi_var.set("25")
 preview_size_var = StringVar()
-preview_size_var.set("800")
+preview_size_var.set("850")
 size_var = StringVar()
-size_var.set("100")
+size_var.set("60")
 marker_var = StringVar()
-marker_var.set("s")
+marker_var.set(".")
 
 # GIS settings variables
 world_var = IntVar()
@@ -225,6 +242,7 @@ highVeg_shaded_var = IntVar()
 # window settings
 root.title("LASplot")
 root.geometry("1920x1080")
+root.configure(bg="black")
 root.minsize(800, 400)
 root.rowconfigure(0, weight=0)
 root.columnconfigure(0, weight=0)
@@ -234,53 +252,71 @@ root.columnconfigure(1, weight=1)
 # a list of images that exist in the ouptu directory after plot
 images = []
 
-options_frame = LabelFrame(root, text="options")
+options_frame = LabelFrame(
+    root, fg="white", bg="gray20", borderwidth=0, highlightthickness=0
+)
 options_frame.columnconfigure(0, weight=1)
-options_frame.grid(row=0, column=0, rowspan=2, sticky=W + N, padx=5, pady=5)
+options_frame.grid(row=0, column=0, rowspan=2, sticky=W + N + S, padx=5, pady=5)
 
-img = LabelFrame(root)
+img = LabelFrame(root, borderwidth=0, highlightthickness=0)
 img.grid(row=1, column=1, sticky=S + N + W + E, padx=5, pady=5)
 
-img_display = Label(img, background="black")
+img_display = Label(img, bg="black", name="png_display")
 img_display.pack(fill="both", expand=True)
 
 # ---------------------------- CHOOSE INPUT / OUTPUT ----------------------------
 
 # FRAME
-top = LabelFrame(root, text="select file")
-top.rowconfigure(0, weight=5, minsize=40)
+top = LabelFrame(
+    root, bg="black", borderwidth=0, highlightthickness=0, name="top_panel"
+)
 top.columnconfigure(0, weight=1)
 top.grid(row=0, column=1, sticky=N + W + E, padx=5, pady=5)
 # button to select input file
 Button(
     top,
-    text="Select file",
+    text="SELECT FILE",
     command=choose_source,
-    foreground="black",
-).grid(row=0, column=0, sticky=W, padx=5, pady=5)
+    fg="white",
+    bg="darkorange3",
+).grid(row=0, column=0, sticky=W + N + S, padx=5, pady=5)
 
 # button to select output destination
-Button(
-    top,
-    text="Output dir",
-    command=choose_dest,
-    foreground="black",
-).grid(row=1, column=0, sticky=W, padx=5, pady=5)
+Button(top, text="OUTPUT DIR", command=choose_dest, fg="white", bg="darkorange3").grid(
+    row=1, column=0, sticky=W + N + S, padx=5, pady=5
+)
 
 # label to display chosen file
-input_lbl = Label(top, textvariable=source_var, fg="blue")
+input_lbl = Label(top, textvariable=source_var, fg="cyan", bg="black")
 input_lbl.grid(row=0, column=1, sticky=E, padx=5, pady=5)
 
 # label to display chosen destination
-output_lbl = Label(top, textvariable=destination_var, fg="blue")
+output_lbl = Label(top, textvariable=destination_var, fg="cyan", bg="black")
 output_lbl.grid(row=1, column=1, sticky=E, padx=5, pady=5)
+
+# ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
+# GO button config
+Button(
+    top,
+    text="BEGIN",
+    command=handler,
+    bg="dodgerblue",
+    fg="white",
+    font=10,
+).grid(row=0, column=3, rowspan=2, sticky=N + S + W + E, padx=5, pady=5)
 
 
 # ---------------------------- CHOOSE OUTPUT SETTINGS ----------------------------
 
 # FRAME
-control_frame = LabelFrame(options_frame, text="operations")
-control_frame.grid(row=0, column=0, sticky=N + S + W + E, padx=5, pady=5)
+control_frame = LabelFrame(
+    options_frame,
+    text="OPERATIONS",
+    borderwidth=0,
+    font=10,
+)
+control_frame.pack(pady=10, padx=5, fill="both")
+
 
 # CONTROLS
 Checkbutton(
@@ -309,7 +345,10 @@ Checkbutton(
 ).pack(anchor=W)
 
 Checkbutton(
-    control_frame, text="composite image", variable=composite_var, state=DISABLED
+    control_frame,
+    text="composite image",
+    variable=composite_var,
+    state=DISABLED,
 ).pack(anchor=W)
 
 Checkbutton(
@@ -317,54 +356,18 @@ Checkbutton(
     text="print info to console",
     variable=print_var,
 ).pack(anchor=W)
-# FRAME
-gis_frame = LabelFrame(options_frame, text="GIS")
-gis_frame.grid(row=1, column=0, sticky=N + S + W + E, padx=5, pady=5)
 
-world_chk = Checkbutton(
-    gis_frame,
-    text="generate world file",
-    variable=world_var,
-)
-world_chk.pack(anchor=W)
-
-# ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
-
-# FRAME
-img_settings_frame = LabelFrame(options_frame, text="sizing")
-img_settings_frame.grid(row=2, column=0, sticky=N + S + W + E, padx=5, pady=5)
-
-# CONTROLS
-dpi_label = Label(img_settings_frame, text="output DPI")
-dpi_label.grid(row=3, column=0, sticky=W, padx=5, pady=5)
-
-dpi_input = Entry(img_settings_frame, textvariable=dpi_var, width=7)
-dpi_input.grid(row=3, column=1, sticky=E, padx=5, pady=5)
-
-size_label = Label(img_settings_frame, text="output size")
-size_label.grid(row=4, column=0, sticky=W, padx=5, pady=5)
-
-size_label = Entry(img_settings_frame, textvariable=size_var, width=7)
-size_label.grid(row=4, column=1, sticky=E, padx=5, pady=5)
-
-preview_size_label = Label(img_settings_frame, text="preview size")
-preview_size_label.grid(row=5, column=0, sticky=W, padx=5, pady=5)
-
-preview_size_label = Entry(img_settings_frame, textvariable=preview_size_var, width=7)
-preview_size_label.grid(row=5, column=1, sticky=E, padx=5, pady=5)
-
-# FRAME (marker stype)
-marker_frame = LabelFrame(options_frame, text="marker style")
-marker_frame.grid(row=3, column=0, sticky=N + S + W + E, padx=5, pady=5)
-Radiobutton(marker_frame, text="pixel", variable=marker_var, value=",").pack(anchor=W)
-Radiobutton(marker_frame, text="point", variable=marker_var, value=".").pack(anchor=W)
-Radiobutton(marker_frame, text="circle", variable=marker_var, value="o").pack(anchor=W)
-Radiobutton(marker_frame, text="square", variable=marker_var, value="s").pack(anchor=W)
 # ---------------------------- CHOOSE PLOT SETTINGS ----------------------------
 
 # FRAME
-plot_frame = LabelFrame(options_frame, text="classifications")
-plot_frame.grid(row=4, column=0, sticky=N + S + W + E, padx=5, pady=5)
+plot_frame = LabelFrame(
+    options_frame,
+    text=" LAYERS",
+    borderwidth=0,
+    font=10,
+)
+plot_frame.pack(pady=10, padx=5, fill="both")
+
 
 # CONTROLS
 ground_chk = Checkbutton(
@@ -418,30 +421,138 @@ highVeg_chk = Checkbutton(
 highVeg_chk.pack(anchor=W)
 
 
-# ---------------------------- BEGIN IMAGE PROCESSING ----------------------------
-# GO button config
-Button(
-    top,
-    text="BEGIN",
-    command=handler,
-    background="dodgerblue",
-    foreground="white",
-    padx=5,
-    pady=5,
-).grid(row=0, column=3, rowspan=2, sticky=N + S + W + E, padx=5, pady=5)
+# ---------------------------- GIS SPECIFIC SETTINGS ----------------------------
+
+# FRAME
+gis_frame = LabelFrame(
+    options_frame, text="GIS", fg="white", bg="gray20", borderwidth=0, font=10
+)
+gis_frame.pack(pady=10, padx=5, fill="both")
+
+
+world_chk = Checkbutton(
+    gis_frame,
+    text="generate world file",
+    variable=world_var,
+)
+world_chk.pack(anchor=W)
+
+# ---------------------------- CHOOSE MARKER SETTINGS ----------------------------
+
+# FRAME (marker stype)
+marker_frame = LabelFrame(
+    options_frame,
+    text="MARKER STYLE",
+    borderwidth=0,
+    font=10,
+)
+marker_frame.pack(pady=10, padx=5, fill="both")
+
+Radiobutton(
+    marker_frame,
+    text="pixel",
+    variable=marker_var,
+    value=",",
+).pack(anchor=W)
+Radiobutton(
+    marker_frame,
+    text="point",
+    variable=marker_var,
+    value=".",
+).pack(anchor=W)
+Radiobutton(
+    marker_frame,
+    text="circle",
+    variable=marker_var,
+    value="o",
+).pack(anchor=W)
+Radiobutton(
+    marker_frame,
+    text="square",
+    variable=marker_var,
+    value="s",
+).pack(anchor=W)
+
+# ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
+
+# FRAME
+img_settings_frame = LabelFrame(
+    options_frame,
+    text="SIZE OPTIONS",
+    borderwidth=0,
+    font=10,
+)
+img_settings_frame.pack(pady=10, padx=5, fill="both")
+
+
+# CONTROLS
+dpi_label = Label(
+    img_settings_frame,
+    text="output DPI",
+)
+dpi_label.grid(row=3, column=1, sticky=W)
+
+dpi_input = Entry(
+    img_settings_frame,
+    textvariable=dpi_var,
+    width=7,
+)
+dpi_input.grid(row=3, column=0, sticky=E, padx=5, pady=5)
+
+size_label = Label(
+    img_settings_frame,
+    text="output size",
+)
+size_label.grid(row=4, column=1, sticky=W)
+
+size_input = Entry(
+    img_settings_frame,
+    textvariable=size_var,
+    width=7,
+)
+size_input.grid(row=4, column=0, sticky=E, padx=5, pady=5)
+
+preview_size_label = Label(
+    img_settings_frame,
+    text="preview size",
+)
+preview_size_label.grid(row=5, column=1, sticky=W)
+
+preview_size_input = Entry(
+    img_settings_frame,
+    textvariable=preview_size_var,
+    width=7,
+)
+preview_size_input.grid(row=5, column=0, sticky=E, padx=5, pady=5)
+
 
 # ---------------------------- CHOOSE IMAGE TO VIEW ----------------------------
 # FRAME
-control_frame = LabelFrame(options_frame, text="view image")
-control_frame.grid(row=5, column=0, sticky=N + S + W + E, padx=5, pady=5)
+control_frame = LabelFrame(
+    options_frame,
+    text="CHOOSE IMAGE",
+    borderwidth=0,
+    font=10,
+    relief="flat",
+    highlightthickness=0,
+)
+control_frame.pack(pady=10, padx=5, fill="both", side=BOTTOM)
 
 # LISTBOX
-file_box = Listbox(control_frame)
-file_box.grid(row=0, column=0, sticky=N + S + W + E, padx=5, pady=5)
+file_box = Listbox(
+    control_frame,
+    borderwidth=0,
+    relief="flat",
+    highlightthickness=0,
+)
+file_box.pack(fill=X)
 
 # update the image to match selection
 file_box.bind("<<ListboxSelect>>", change_img)
 
+
 if __name__ == "__main__":
+    # set the style for the main window
+    set_style(root)
     # run main window
     root.mainloop()
