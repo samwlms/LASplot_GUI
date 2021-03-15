@@ -38,7 +38,7 @@ Use cases include:
 ###### *Speed: fast (0.3 - 0.8s)*
 Using the layer selection pane, users can generate custom images with various LAS classifications included in the plot. These composite images provide a much more complete view of the tile - and allow for a quick snapshot of the file as a whole. 
 
-![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/composite.PNG)
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/composite.png)
 
 
 ### Shaded vegetation option
