@@ -26,7 +26,7 @@ def choose_dest():
 # upon selection of the 'classification view' checkbox,
 # toggle the state of classification options
 def plot_checked():
-    if plot_var.get() == 1:
+    if plot_var.get() or composite_var.get() == 1:
         ground_chk.configure(state="normal")
         buildings_chk.configure(state="normal")
         unclassified_chk.configure(state="normal")
@@ -54,20 +54,20 @@ def plot_checked():
 
 def get_plot_args():
     arguments = []
-    if buildings_var.get() == 1:
-        arguments.append(6)
     if ground_var.get() == 1:
         arguments.append(2)
-    if unclassified_var.get() == 1:
-        arguments.append(1)
+    if water_var.get() == 1:
+        arguments.append(9)
     if lowVeg_var.get() == 1:
         arguments.append(3)
     if mediumVeg_var.get() == 1:
         arguments.append(4)
+    if buildings_var.get() == 1:
+        arguments.append(6)
+    if unclassified_var.get() == 1:
+        arguments.append(1)
     if highVeg_var.get() == 1:
         arguments.append(5)
-    if water_var.get() == 1:
-        arguments.append(9)
 
     return arguments
 
@@ -129,6 +129,7 @@ def handler():
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
+            layers = get_plot_args()
             plotter = plotters.LayerPlotter(
                 "composite", source, destination, size, dpi, marker, layers
             )
@@ -278,12 +279,12 @@ Button(
     top,
     text="SELECT FILE",
     command=choose_source,
-    fg="white",
-    bg="darkorange3",
+    fg="black",
+    bg="orange",
 ).grid(row=0, column=0, sticky=W + N + S, padx=5, pady=5)
 
 # button to select output destination
-Button(top, text="OUTPUT DIR", command=choose_dest, fg="white", bg="darkorange3").grid(
+Button(top, text="OUTPUT DIR", command=choose_dest, fg="black", bg="orange").grid(
     row=1, column=0, sticky=W + N + S, padx=5, pady=5
 )
 
@@ -349,6 +350,7 @@ Checkbutton(
     control_frame,
     text="composite image",
     variable=composite_var,
+    command=plot_checked,
 ).pack(anchor=W)
 
 Checkbutton(
@@ -526,7 +528,7 @@ preview_size_input.grid(row=5, column=0, sticky=E, padx=5, pady=5)
 # FRAME
 list_frame = LabelFrame(
     options_frame,
-    text="CHOOSE IMAGE",
+    text="Choose image",
     borderwidth=0,
     font=10,
     relief="flat",
