@@ -1,6 +1,7 @@
 # LASplot - *LiDAR Visualization Tools*
 ### Multipurpose LiDAR analysis software built with Python (using Tkinter framework and Laspy)
 
+![terrain image](https://github.com/samwlms/LASplot_GUI/blob/main/images/terrain.PNG)
 
 ## Overview
 LASplot is an ongoing work-in-progress and learning exercise which I have undertaken in order to improve my Python programming skills, while also learning more about LiDAR technologies. I am aware that there are many existing (more powerful) tools out there that can do much of what LASplot does. Please feel free to fork the main branch and add any features you'd like. I am more than open to feedback and collaboration.
@@ -19,8 +20,6 @@ If you are running the application for the first time, simply click on **'instal
 Once installed, the standard launch point for the application is **'run_program.bat'**. Using this method will run LASplot from the python virtual environment and help ensure cross-system compatibility.
 
 ###### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3)_
-
-![terrain image](https://github.com/samwlms/LASplot_GUI/blob/main/images/terrain.PNG)
 
 ## Visualization options
 
