@@ -21,6 +21,14 @@ def plot_print():
     print("-----------------------------------------")
 
 
+def composite_print():
+
+    print("")
+    print("-----------------------------------------")
+    print("------------COMPOSITE IMAGERY------------")
+    print("-----------------------------------------")
+
+
 def shaded_print():
 
     print("")

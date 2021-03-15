@@ -11,11 +11,12 @@ import matplotlib.pyplot as plt
 
 
 class WindowSelections:
-    def __init__(self, input, output, size, dpi):
+    def __init__(self, input, output, size, dpi, marker):
         self.input = input
         self.output = output
         self.size = size
         self.dpi = dpi
+        self.marker = marker
         self.las = File(self.input, mode="r")
 
     def save_png(self, filename):
@@ -41,11 +42,10 @@ class WindowSelections:
 
 class GradientPlotter(WindowSelections):
     def __init__(self, operation, input, output, size, dpi, marker):
-        super().__init__(input, output, size, dpi)
+        super().__init__(input, output, size, dpi, marker)
         self.operation = operation
         self.filename = "/" + operation + ".png"
-        self.marker = marker
-        self.num_bands = 25
+        self.num_bands = 40
         self.bands = None
         self.colours = None
 
@@ -174,30 +174,33 @@ class GradientPlotter(WindowSelections):
     def generate_bands(self):
         final_bands = ()
         for count in range(0, self.num_bands):
-            current_band = self.get_band(count)
+            current_band = self.get_band(count + 1)
             final_bands = final_bands + ((current_band),)
         self.bands = final_bands
 
 
 class LayerPlotter(WindowSelections):
-    def __init__(self, input, output, size, dpi, marker, plot_args):
-        super().__init__(input, output, size, dpi)
+    def __init__(self, operation, input, output, size, dpi, marker, plot_args):
+        super().__init__(input, output, size, dpi, marker)
         self.plot_args = plot_args
-        self.marker = marker
+        self.operation = operation
 
     def plot(self):
-        printer.plot_print()
+        if self.operation == "plot":
+            printer.plot_print()
+        else:
+            printer.composite_print()
 
         # dict containing the names/ colours of various classification
         # layers, where the key maps with the LAS spec classification.
         names_colours = {
-            "1": ["/unclassified.png", "m"],
-            "2": ["/ground.png", "SaddleBrown"],
+            "1": ["/unclassified.png", "violet"],
+            "2": ["/ground.png", "saddlebrown"],
             "3": ["/lowVeg.png", "LimeGreen"],
-            "4": ["/mediumVeg.png", "Green"],
-            "5": ["/highVeg.png", "DarkGreen"],
+            "4": ["/mediumVeg.png", "LimeGreen"],
+            "5": ["/highVeg.png", "green"],
             "6": ["/buildings.png", "White"],
-            "9": ["/water.png", "DodgerBlue"],
+            "9": ["/water.png", "deepskyblue"],
         }
 
         for arg in self.plot_args:
@@ -208,10 +211,15 @@ class LayerPlotter(WindowSelections):
             plt.plot(
                 *self.get_xy(arg), color=val[1], linestyle="none", marker=self.marker
             )
-            self.save_png(val[0])
-
+            if self.operation == "plot":
+                self.save_png(val[0])
+                time_output = time.time() - start
+                printer.saved(val[0], time_output)
+        if self.operation == "composite":
+            filename = "/composite"
+            self.save_png(filename)
             time_output = time.time() - start
-            printer.saved(val[0], time_output)
+            printer.saved(filename, time_output)
         printer.complete()
 
     def get_xy(self, classification):
@@ -225,8 +233,7 @@ class LayerPlotter(WindowSelections):
 
 class VegShader(WindowSelections):
     def __init__(self, input, output, size, dpi, marker):
-        super().__init__(input, output, size, dpi)
-        self.marker = marker
+        super().__init__(input, output, size, dpi, marker)
         self.colours = None
         self.bands = None
         self.bands_required = 15

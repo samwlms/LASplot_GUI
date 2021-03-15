@@ -26,7 +26,7 @@ def choose_dest():
 # upon selection of the 'classification view' checkbox,
 # toggle the state of classification options
 def plot_checked():
-    if plot_var.get() == 1:
+    if plot_var.get() or composite_var.get() == 1:
         ground_chk.configure(state="normal")
         buildings_chk.configure(state="normal")
         unclassified_chk.configure(state="normal")
@@ -54,20 +54,20 @@ def plot_checked():
 
 def get_plot_args():
     arguments = []
-    if buildings_var.get() == 1:
-        arguments.append(6)
     if ground_var.get() == 1:
         arguments.append(2)
-    if unclassified_var.get() == 1:
-        arguments.append(1)
+    if water_var.get() == 1:
+        arguments.append(9)
     if lowVeg_var.get() == 1:
         arguments.append(3)
     if mediumVeg_var.get() == 1:
         arguments.append(4)
+    if buildings_var.get() == 1:
+        arguments.append(6)
+    if unclassified_var.get() == 1:
+        arguments.append(1)
     if highVeg_var.get() == 1:
         arguments.append(5)
-    if water_var.get() == 1:
-        arguments.append(9)
 
     return arguments
 
@@ -116,7 +116,7 @@ def handler():
             layers = get_plot_args()
             # plot the images to PNG
             plotter = plotters.LayerPlotter(
-                source, destination, size, dpi, marker, layers
+                "plot", source, destination, size, dpi, marker, layers
             )
             plotter.plot()
 
@@ -129,13 +129,11 @@ def handler():
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
-            print("")
-            print("(composite image stuff goes here)")
-            print("")
-
-        # if 'print info' option is selected
-        if print_var.get() == 1:
-            printer.format(source_var.get())
+            layers = get_plot_args()
+            plotter = plotters.LayerPlotter(
+                "composite", source, destination, size, dpi, marker, layers
+            )
+            plotter.plot()
 
         # if 'ground intensity' option is selected
         if ground_intensity_var.get() == 1:
@@ -154,6 +152,10 @@ def handler():
             shader = plotters.VegShader(source, destination, size, dpi, marker)
             shader.plot_shaded()
             print("OPERATION: 'highVeg shaded' selected")
+
+        # if 'print info' option is selected
+        if print_var.get() == 1:
+            printer.format(source_var.get())
 
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
@@ -277,12 +279,12 @@ Button(
     top,
     text="SELECT FILE",
     command=choose_source,
-    fg="white",
-    bg="darkorange3",
+    fg="black",
+    bg="orange",
 ).grid(row=0, column=0, sticky=W + N + S, padx=5, pady=5)
 
 # button to select output destination
-Button(top, text="OUTPUT DIR", command=choose_dest, fg="white", bg="darkorange3").grid(
+Button(top, text="OUTPUT DIR", command=choose_dest, fg="black", bg="orange").grid(
     row=1, column=0, sticky=W + N + S, padx=5, pady=5
 )
 
@@ -311,7 +313,7 @@ Button(
 # FRAME
 control_frame = LabelFrame(
     options_frame,
-    text="OPERATIONS",
+    text="Operations",
     borderwidth=0,
     font=10,
 )
@@ -340,7 +342,7 @@ Checkbutton(
 
 Checkbutton(
     control_frame,
-    text="highVeg (shaded)",
+    text="shaded veg (slow)",
     variable=highVeg_shaded_var,
 ).pack(anchor=W)
 
@@ -348,12 +350,12 @@ Checkbutton(
     control_frame,
     text="composite image",
     variable=composite_var,
-    state=DISABLED,
+    command=plot_checked,
 ).pack(anchor=W)
 
 Checkbutton(
     control_frame,
-    text="print info to console",
+    text="print file info",
     variable=print_var,
 ).pack(anchor=W)
 
@@ -362,7 +364,7 @@ Checkbutton(
 # FRAME
 plot_frame = LabelFrame(
     options_frame,
-    text=" LAYERS",
+    text="Layers",
     borderwidth=0,
     font=10,
 )
@@ -430,19 +432,18 @@ gis_frame = LabelFrame(
 gis_frame.pack(pady=10, padx=5, fill="both")
 
 
-world_chk = Checkbutton(
+Checkbutton(
     gis_frame,
     text="generate world file",
     variable=world_var,
-)
-world_chk.pack(anchor=W)
+).pack(anchor=W)
 
 # ---------------------------- CHOOSE MARKER SETTINGS ----------------------------
 
 # FRAME (marker stype)
 marker_frame = LabelFrame(
     options_frame,
-    text="MARKER STYLE",
+    text="Marker style",
     borderwidth=0,
     font=10,
 )
@@ -450,25 +451,25 @@ marker_frame.pack(pady=10, padx=5, fill="both")
 
 Radiobutton(
     marker_frame,
-    text="pixel",
+    text="pixel (small)",
     variable=marker_var,
     value=",",
 ).pack(anchor=W)
 Radiobutton(
     marker_frame,
-    text="point",
+    text="point (medium)",
     variable=marker_var,
     value=".",
 ).pack(anchor=W)
 Radiobutton(
     marker_frame,
-    text="circle",
+    text="circle (large)",
     variable=marker_var,
     value="o",
 ).pack(anchor=W)
 Radiobutton(
     marker_frame,
-    text="square",
+    text="square (large)",
     variable=marker_var,
     value="s",
 ).pack(anchor=W)
@@ -476,50 +477,47 @@ Radiobutton(
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
 # FRAME
-img_settings_frame = LabelFrame(
+settings_frame = LabelFrame(
     options_frame,
-    text="SIZE OPTIONS",
+    text="Size options",
     borderwidth=0,
     font=10,
 )
-img_settings_frame.pack(pady=10, padx=5, fill="both")
+settings_frame.pack(pady=10, padx=5, fill="both")
 
 
 # CONTROLS
-dpi_label = Label(
-    img_settings_frame,
+Label(
+    settings_frame,
     text="output DPI",
-)
-dpi_label.grid(row=3, column=1, sticky=W)
+).grid(row=3, column=1, sticky=W)
 
 dpi_input = Entry(
-    img_settings_frame,
+    settings_frame,
     textvariable=dpi_var,
     width=7,
 )
 dpi_input.grid(row=3, column=0, sticky=E, padx=5, pady=5)
 
-size_label = Label(
-    img_settings_frame,
+Label(
+    settings_frame,
     text="output size",
-)
-size_label.grid(row=4, column=1, sticky=W)
+).grid(row=4, column=1, sticky=W)
 
 size_input = Entry(
-    img_settings_frame,
+    settings_frame,
     textvariable=size_var,
     width=7,
 )
 size_input.grid(row=4, column=0, sticky=E, padx=5, pady=5)
 
-preview_size_label = Label(
-    img_settings_frame,
+Label(
+    settings_frame,
     text="preview size",
-)
-preview_size_label.grid(row=5, column=1, sticky=W)
+).grid(row=5, column=1, sticky=W)
 
 preview_size_input = Entry(
-    img_settings_frame,
+    settings_frame,
     textvariable=preview_size_var,
     width=7,
 )
@@ -528,19 +526,19 @@ preview_size_input.grid(row=5, column=0, sticky=E, padx=5, pady=5)
 
 # ---------------------------- CHOOSE IMAGE TO VIEW ----------------------------
 # FRAME
-control_frame = LabelFrame(
+list_frame = LabelFrame(
     options_frame,
-    text="CHOOSE IMAGE",
+    text="Choose image",
     borderwidth=0,
     font=10,
     relief="flat",
     highlightthickness=0,
 )
-control_frame.pack(pady=10, padx=5, fill="both", side=BOTTOM)
+list_frame.pack(pady=10, padx=5, fill="both", side=BOTTOM)
 
 # LISTBOX
 file_box = Listbox(
-    control_frame,
+    list_frame,
     borderwidth=0,
     relief="flat",
     highlightthickness=0,
