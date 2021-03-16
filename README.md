@@ -54,7 +54,7 @@ _**With the following options, users may visualise both relative and/ or absolut
 ##### Gradient
 _Represents the relative changes in ground elevation by marking elevation changes between the highest and lowest points on a given tile. The highest point on the tile will always be red (255, 0, 0), and conversely the lowest point will always be blue (0, 0, 255)_
 
-![gradient image](https://github.com/samwlms/LASplot_GUI/blob/main/images/gradient.PNG)
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/gradient.PNG)
 
 Using the gradient functionality / option in the GUI, users are ables to quickly evaluate the relative changes in terrain elevation. The basic theory behind the gradient function is as follows:
 - The ground layer is split into X number of distinct bands determined by the Z value of each point record.
@@ -66,14 +66,18 @@ Using the gradient functionality / option in the GUI, users are ables to quickly
 ![colour theory image](https://github.com/samwlms/LASplot_GUI/blob/main/images/RGB_value_relationships.png)
 
 ##### Contour
-_Represents the elevation changes within a tile that are characterised by distinct (user defined) elevation intervals. The highest and lowest points of a file are not considered, therefore: a near flat tile will be represented using a single colour._
+_Represents the elevation changes within a tile that are characterized by distinct (user defined) elevation intervals. The highest and lowest points of a file are not considered, therefore: a near flat tile will be represented using a single colour._
+
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/contour.png)
+
+Using the contour function, users may specify a band height (in meters) and break the input file into distinct bands. This allows for analysis of absolute terrain height changes across the tile. Areas with many bands grouped closely together will indicate a steep change in terrain height, while sparsely separated  bands may indicate a reasonably level surface
 
 ### Ground intensity analysis:
 ###### *Speed: fast-med (2 - 4s)*
 
-**With the following options, users may visualise the return intensity for point records within a file. This is useful for identifying road features and changes in ground layer terrain makeup**
+**With the following options, users may visualize the return intensity for point records within a file. This is useful for identifying road features and changes in ground layer terrain makeup**
 
-![intensity image](https://github.com/samwlms/LASplot_GUI/blob/main/images/intensity.png)
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/intensity.png)
 
 
 ## Output settings for PNG files
