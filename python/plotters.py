@@ -180,7 +180,7 @@ class GradientPlotter(WindowSelections):
 
 
 class ContourPlotter(WindowSelections):
-    def __init__(self, operation, input, output, size, dpi, marker, band_height):
+    def __init__(self, input, output, size, dpi, marker, band_height):
         super().__init__(input, output, size, dpi, marker)
         self.band_height = band_height / self.las.header.scale[2]
         self.bands_1 = []
@@ -230,14 +230,14 @@ class ContourPlotter(WindowSelections):
             # add the bands
             if band % 2 == 0:
                 plt.plot(
-                    *current_band,
-                    color="goldenrod",
-                    linestyle="none",
-                    marker=self.marker
+                    *current_band, color="dimgray", linestyle="none", marker=self.marker
                 )
             else:
                 plt.plot(
-                    *current_band, color="khaki", linestyle="none", marker=self.marker
+                    *current_band,
+                    color="lightblue",
+                    linestyle="none",
+                    marker=self.marker
                 )
 
 
