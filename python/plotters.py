@@ -199,7 +199,7 @@ class ContourPlotter(WindowSelections):
         printer.complete()
 
     def generate_bands(self):
-        # get the (scaled) lowest ground point height
+        # get the (scaled) highest/ lowest ground point height
         low_z = np.amin(self.las.Z[self.las.Classification == 2])
         high_z = np.amax(self.las.Z[self.las.Classification == 2])
         z_delta = high_z - low_z
@@ -210,7 +210,7 @@ class ContourPlotter(WindowSelections):
 
         valid_ground = self.las.Classification == 2
 
-        for band in range(divisions):
+        for band in range(divisions + 1):
             # calculate the upper and lower bounds for each band
             upper_limit = low_z + self.band_height * (band + 1)
             lower_limit = low_z + self.band_height * (band + 1) - self.band_height
@@ -227,18 +227,14 @@ class ContourPlotter(WindowSelections):
             # the current band that meets all validity checks
             current_band = [self.las.X[all_valid], self.las.Y[all_valid]]
 
-            # add the bands
+            # set colour for each band
             if band % 2 == 0:
-                plt.plot(
-                    *current_band, color="dimgray", linestyle="none", marker=self.marker
-                )
+                colour = "dimgray"
             else:
-                plt.plot(
-                    *current_band,
-                    color="lightblue",
-                    linestyle="none",
-                    marker=self.marker
-                )
+                colour = "lightblue"
+
+            # plot the bands using alternating colours
+            plt.plot(*current_band, color=colour, linestyle="none", marker=self.marker)
 
 
 class LayerPlotter(WindowSelections):
