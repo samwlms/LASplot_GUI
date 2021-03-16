@@ -179,6 +179,68 @@ class GradientPlotter(WindowSelections):
         self.bands = final_bands
 
 
+class ContourPlotter(WindowSelections):
+    def __init__(self, input, output, size, dpi, marker, band_height):
+        super().__init__(input, output, size, dpi, marker)
+        self.band_height = band_height / self.las.header.scale[2]
+        self.bands_1 = []
+        self.bands_2 = []
+        self.filename = "/contour"
+
+    def plot_contour(self):
+        printer.contour_print()
+        start = time.time()
+
+        self.generate_bands()
+        self.save_png(self.filename)
+
+        time_output = time.time() - start
+        printer.saved(self.filename, time_output)
+        printer.complete()
+
+    def generate_bands(self):
+        # get the (scaled) lowest ground point height
+        low_z = np.amin(self.las.Z[self.las.Classification == 2])
+        high_z = np.amax(self.las.Z[self.las.Classification == 2])
+        z_delta = high_z - low_z
+
+        divisions = round(z_delta / self.band_height)
+
+        final_bands = ()
+
+        valid_ground = self.las.Classification == 2
+
+        for band in range(divisions):
+            # calculate the upper and lower bounds for each band
+            upper_limit = low_z + self.band_height * (band + 1)
+            lower_limit = low_z + self.band_height * (band + 1) - self.band_height
+
+            # find all points within the z range for the band
+            beneath_upper = self.las.Z <= upper_limit
+            above_lower = self.las.Z > lower_limit
+            valid_bounds = np.logical_and(beneath_upper, above_lower)
+
+            # finally, find all bands that are of ground classification
+            # AND also within the valid bounds for this particular band
+            all_valid = np.logical_and(valid_bounds, valid_ground)
+
+            # the current band that meets all validity checks
+            current_band = [self.las.X[all_valid], self.las.Y[all_valid]]
+
+            # add the bands
+            if band % 2 == 0:
+                plt.plot(
+                    *current_band, color="dimgray", linestyle="none", marker=self.marker
+                )
+            else:
+                plt.plot(
+                    *current_band,
+                    color="lightblue",
+                    linestyle="none",
+                    marker=self.marker
+                )
+
+
 class LayerPlotter(WindowSelections):
     def __init__(self, operation, input, output, size, dpi, marker, plot_args):
         super().__init__(input, output, size, dpi, marker)
@@ -186,6 +248,8 @@ class LayerPlotter(WindowSelections):
         self.operation = operation
 
     def plot(self):
+        if len(self.plot_args) == 0:
+            return
         if self.operation == "plot":
             printer.plot_print()
         else:
@@ -342,6 +406,7 @@ class VegShader(WindowSelections):
         for count in range(self.bands_required):
             green = round(green - increment, 3)
             red = round(red - increment / 3, 3)
+            blue = round(blue + increment / 4, 3)
             band_colour = (red, green, blue)
             colours = colours + (band_colour,)
 
