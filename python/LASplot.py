@@ -98,12 +98,15 @@ def change_img(event):
 def handler():
     if valid_inputs():
         # user variables
-        source = source_var.get()
-        destination = destination_var.get()
+        src = source_var.get()
+        out = destination_var.get()
         size = int(size_var.get())
         preview_size_int = int(preview_size_var.get())
         dpi = int(dpi_var.get())
         marker = marker_var.get()
+        contour_height = int(contour_height_var.get())
+        layers = get_plot_args()
+        args = src, out, size, dpi, marker
 
         # delete existing filenames in the listbox
         file_box.delete(0, END)
@@ -113,63 +116,42 @@ def handler():
 
         # if 'layer' option is selected
         if plot_var.get() == 1:
-            layers = get_plot_args()
-            # plot the images to PNG
-            plotter = plotters.LayerPlotter(
-                "plot", source, destination, size, dpi, marker, layers
-            )
-            plotter.plot()
+            plotters.LayerPlotter("plot", *args, layers).plot()
 
         # if 'gradient' option is selected
         if gradient_var.get() == 1:
-            plotter = plotters.GradientPlotter(
-                "gradient", source, destination, size, dpi, marker
-            )
-            plotter.plot_gradient()
+            plotters.GradientPlotter("gradient", *args).plot_gradient()
 
-        # if 'gradient' option is selected
+        # if 'contour' option is selected
         if contour_var.get() == 1:
-            plotter = plotters.ContourPlotter(
-                "gradient", source, destination_var.get(), size, dpi, marker, 2
-            )
-            plotter.plot_contour()
+            plotters.ContourPlotter(*args, contour_height).plot_contour()
 
         # if 'composite' option is selected
         if composite_var.get() == 1:
-            layers = get_plot_args()
-            plotter = plotters.LayerPlotter(
-                "composite", source, destination, size, dpi, marker, layers
-            )
-            plotter.plot()
+            plotters.LayerPlotter("composite", *args, layers).plot()
 
         # if 'ground intensity' option is selected
         if ground_intensity_var.get() == 1:
-            plotter = plotters.GradientPlotter(
-                "intensity", source, destination, size, dpi, marker
-            )
-            plotter.plot_gradient()
+            plotters.GradientPlotter("intensity", *args).plot_gradient()
 
         # if 'generate world files' option is selected
         if world_var.get() == 1:
-            world.make_world_file(source, destination)
-            print("OPERATION: 'generated world files' selected")
+            world.make_world_file(src, out)
 
         # if 'highVeg shaded' option is selected
         if highVeg_shaded_var.get() == 1:
-            shader = plotters.VegShader(source, destination, size, dpi, marker)
-            shader.plot_shaded()
-            print("OPERATION: 'highVeg shaded' selected")
+            plotters.VegShader(*args).plot_shaded()
 
         # if 'print info' option is selected
         if print_var.get() == 1:
-            printer.format(source_var.get())
+            printer.format(src)
 
         # get all image files at the output dir and make a list
         for the_file in os.listdir(destination_var.get()):
 
             if the_file.endswith("png"):
                 # make a list of 'PIL photoImage' objects
-                img_path = destination_var.get() + "/" + the_file
+                img_path = out + "/" + the_file
                 img = Image.open(img_path).resize((preview_size_int, preview_size_int))
                 images.append(ImageTk.PhotoImage(img))
 
@@ -227,6 +209,11 @@ size_var = StringVar()
 size_var.set("50")
 marker_var = StringVar()
 marker_var.set(".")
+
+# contour settings variables
+contour_height_var = StringVar()
+contour_height_var.set("2")
+
 
 # GIS settings variables
 world_var = IntVar()
@@ -489,6 +476,32 @@ Radiobutton(
     value="s",
 ).pack(anchor=W)
 
+# ---------------------------- CHOOSE CONTOUR HEIGHT ----------------------------
+
+# FRAME
+contour_frame = LabelFrame(
+    options_frame,
+    text="Contour height",
+    borderwidth=0,
+    font=10,
+)
+contour_frame.pack(pady=10, padx=5, fill="both")
+
+
+# CONTROLS
+Label(
+    contour_frame,
+    text="meters",
+).grid(row=0, column=1, sticky=W)
+
+contour_input = Entry(
+    contour_frame,
+    textvariable=contour_height_var,
+    width=5,
+)
+contour_input.grid(row=0, column=0, sticky=E, padx=5, pady=5)
+
+
 # ---------------------------- CHOOSE IMAGE SETTINGS ----------------------------
 
 # FRAME
@@ -510,7 +523,7 @@ Label(
 dpi_input = Entry(
     settings_frame,
     textvariable=dpi_var,
-    width=7,
+    width=5,
 )
 dpi_input.grid(row=3, column=0, sticky=E, padx=5, pady=5)
 
@@ -522,7 +535,7 @@ Label(
 size_input = Entry(
     settings_frame,
     textvariable=size_var,
-    width=7,
+    width=5,
 )
 size_input.grid(row=4, column=0, sticky=E, padx=5, pady=5)
 
@@ -534,7 +547,7 @@ Label(
 preview_size_input = Entry(
     settings_frame,
     textvariable=preview_size_var,
-    width=7,
+    width=5,
 )
 preview_size_input.grid(row=5, column=0, sticky=E, padx=5, pady=5)
 
