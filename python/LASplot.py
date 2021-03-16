@@ -127,6 +127,13 @@ def handler():
             )
             plotter.plot_gradient()
 
+        # if 'gradient' option is selected
+        if contour_var.get() == 1:
+            plotter = plotters.ContourPlotter(
+                "gradient", source, destination_var.get(), size, dpi, marker, 2
+            )
+            plotter.plot_contour()
+
         # if 'composite' option is selected
         if composite_var.get() == 1:
             layers = get_plot_args()
@@ -213,11 +220,11 @@ destination_var = StringVar()
 
 # image settings variables
 dpi_var = StringVar()
-dpi_var.set("25")
+dpi_var.set("20")
 preview_size_var = StringVar()
 preview_size_var.set("850")
 size_var = StringVar()
-size_var.set("60")
+size_var.set("50")
 marker_var = StringVar()
 marker_var.set(".")
 
@@ -236,6 +243,7 @@ water_var = IntVar()
 # checkbox variables
 plot_var = IntVar()
 gradient_var = IntVar()
+contour_var = IntVar()
 composite_var = IntVar()
 print_var = IntVar()
 ground_intensity_var = IntVar()
@@ -333,6 +341,13 @@ Checkbutton(
     text="ground gradient",
     variable=gradient_var,
 ).pack(anchor=W)
+
+Checkbutton(
+    control_frame,
+    text="ground contour",
+    variable=contour_var,
+).pack(anchor=W)
+
 
 Checkbutton(
     control_frame,
