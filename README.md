@@ -12,14 +12,13 @@ For any questions/ concerns/ feedback about the software, shoot me an email me a
 
 ###### _**How to run the LASplot application on your machine**_
 
-#### Installation
+Installing and running the application on Windows operating systems is as simple as clicking **LASplot_launcher.bat**.
+The launcher will check to see if the virtual environment and dependencies have been installed, and if they haven't; it will perform the necessary installation process (-m venv & pip install). If the program has previously installed these dependencies, the launcher will boot straight into LASplot.
 
-If you are running the application for the first time, simply click on **'install.bat'** to initialise the application virtual environment, and install necessary dependencies.
+![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/installer.png)
 
-#### Running the application
-Once installed, the standard launch point for the application is **'run_program.bat'**. Using this method will run LASplot from the python virtual environment and help ensure cross-system compatibility.
 
-###### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3)_
+###### _NOTE: System must have Python 3 at minimum as the installation process utilises the VENV module (included by default in Python 3). When running the program on Mac or Linux you will have to set up the virtual environment manually. Use the requirements.txt file to gather required modules and then launch the LASplot.py file found in /python._
 
 ## Visualization options
 
