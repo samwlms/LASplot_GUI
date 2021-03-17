@@ -70,7 +70,7 @@ _Represents the elevation changes within a tile that are characterized by distin
 
 ![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/contour.png)
 
-Using the contour function, users may specify a band height (in meters) and break the input file into distinct bands. This allows for analysis of absolute terrain height changes across the tile. Areas with many bands grouped closely together will indicate a steep change in terrain height, while sparsely separated  bands may indicate a reasonably level surface
+Using the contour function, users may specify a band height (in meters) and break the input file into distinct bands. This allows for analysis of absolute terrain height changes across the tile.
 
 ### Ground intensity analysis:
 ###### *Speed: fast-med (2 - 4s)*
@@ -100,10 +100,11 @@ Plot options:
 
 With options to generate the following image files:
 - [x] 'plots' *individual layers, separated by LAS classification*
+- [x] 'shaded vegetation' *high vegetation layer with points shaded according to their distance from ground*
 - [x] 'terrain gradient' *elevation gradient showing a the high and low points of the file*
 - [x] 'terrain intensity' *representation of the point record intensity associated with ground classification*
-- [ ] 'terrain contour' *(2 color) banding to reflect relative changes in local ground elevation*
-- [ ] 'composite image' *main classification layers painted in appropriate colours (single image)*
+- [x] 'terrain contour' *(2 color) banding to reflect relative changes in local ground elevation*
+- [x] 'composite image' *main classification layers painted in appropriate colours (single image)*
 - [x] 'file information' *general information about the file and header specifications*
 
 ![controls image](https://github.com/samwlms/LASplot_GUI/blob/main/images/screenshot_settings.PNG)
