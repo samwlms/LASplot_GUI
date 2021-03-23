@@ -7,7 +7,7 @@ from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
 from pathlib import Path
 import printer, plotters, world
-
+from tempfile import TemporaryDirectory
 
 # allows user to select a las file input
 def choose_source():
@@ -23,11 +23,14 @@ def choose_source():
 
 # allows user to define desired output for the files
 def choose_dest():
-    destination_var.set(Path(filedialog.askdirectory()))
+    dest = Path(filedialog.askdirectory())
+
+    if dest.is_dir() and dest.is_absolute():
+        destination_var.set(dest)
 
 
-# upon selection of the 'classification view' checkbox,
-# toggle the state of classification options
+# upon selection of the 'classification view' or 'composite'
+# checkbox, toggle the state of classification options
 def plot_checked():
     if plot_var.get() or composite_var.get() == 1:
         ground_chk.configure(state="normal")
@@ -76,16 +79,34 @@ def get_plot_args():
 
 
 def valid_inputs():
-    # ensure input and output variables have a value
-    s_bool = source_var.get() != ""
-    d_bool = destination_var.get() != ""
-
-    # ensure the input for size and dpi are valid
-    dpi_bool = dpi_var.get().isnumeric()
-    size_bool = preview_size_var.get().isnumeric()
-
-    if all([s_bool, d_bool, dpi_bool, size_bool]):
-        return True
+    # check to see if the input arguments are correct before proceeding
+    # with any plotting. (checks input dir and > 1 plot options)
+    input_bool = any(
+        [
+            gradient_var.get() == 1,
+            contour_var.get() == 1,
+            ground_intensity_var.get() == 1,
+            world_var.get() == 1,
+            highVeg_shaded_var.get() == 1,
+            ground_var.get() == 1,
+            water_var.get() == 1,
+            lowVeg_var.get() == 1,
+            mediumVeg_var.get() == 1,
+            buildings_var.get() == 1,
+            unclassified_var.get() == 1,
+            highVeg_var.get() == 1,
+        ]
+    )
+    return all(
+        [
+            input_bool,
+            source_var.get() != "",
+            dpi_var.get().isnumeric(),
+            size_var.get().isnumeric(),
+            preview_size_var.get().isnumeric(),
+            contour_height_var.get().isnumeric(),
+        ]
+    )
 
 
 def change_img(event):
@@ -94,68 +115,74 @@ def change_img(event):
         img_index = file_box.curselection()[0]
         img_display.configure(image=images[img_index])
         img_display.update()
-    except:  # this bare except irks me. Fix it
-        print("ERROR: no images to select")
+    except Exception as e:  # this bare except irks me. Fix it
+        print("ERROR: no images to select ({})".format(e))
 
 
 def handler():
-    if valid_inputs():
-        # user variables
-        src = source_var.get()
-        out = destination_var.get()
-        size = int(size_var.get())
-        preview_size = int(preview_size_var.get())
-        dpi = int(dpi_var.get())
-        marker = marker_var.get()
-        contour_height = int(contour_height_var.get())
-        layers = get_plot_args()
-        args = src, out, size, dpi, marker
+    if not valid_inputs():
+        print("ERROR: please select valid input and/or plot options")
+        return
 
-        # delete existing filenames in the listbox
-        file_box.delete(0, END)
+    td = TemporaryDirectory()
+    # user variables
+    src = source_var.get()
+    out = destination_var.get()
+    size = int(size_var.get())
+    preview_size = int(preview_size_var.get())
+    dpi = int(dpi_var.get())
+    marker = marker_var.get()
+    contour_height = int(contour_height_var.get())
+    layers = get_plot_args()
 
-        # delete existing images in image list
-        images.clear()
+    if out == "" or out == "NO OUTPUT":
+        if out == "":
+            destination_var.set("NO OUTPUT")
+        out = td.name
+        print("INFO: No output selected - using temp directory")
 
-        # if 'layer' option is selected
-        if plot_var.get() == 1:
-            plotters.LayerPlotter("plot", *args, layers).plot()
-        # if 'gradient' option is selected
-        if gradient_var.get() == 1:
-            plotters.GradientPlotter("gradient", *args).plot_gradient()
-        # if 'contour' option is selected
-        if contour_var.get() == 1:
-            plotters.ContourPlotter(*args, contour_height).plot_contour()
-        # if 'composite' option is selected
-        if composite_var.get() == 1:
-            plotters.LayerPlotter("composite", *args, layers).plot()
-        # if 'ground intensity' option is selected
-        if ground_intensity_var.get() == 1:
-            plotters.GradientPlotter("intensity", *args).plot_gradient()
-        # if 'generate world files' option is selected
-        if world_var.get() == 1:
-            world.make_world_file(src, out)
-        # if 'highVeg shaded' option is selected
-        if highVeg_shaded_var.get() == 1:
-            plotters.VegShader(*args).plot_shaded()
-        # if 'print info' option is selected
-        if print_var.get() == 1:
-            printer.format(src)
+    args = src, out, size, dpi, marker
 
-        dest_images = Path(destination_var.get()).glob("*.png")
+    # delete existing filenames in the listbox
+    file_box.delete(0, END)
 
-        # get all image files at the output dir and make a list
-        for the_file in dest_images:
-            img = Image.open(the_file).resize((preview_size, preview_size))
-            images.append(ImageTk.PhotoImage(img))
-            file_box.insert(END, the_file.name)
+    # delete existing images in image list
+    images.clear()
 
-        if dest_images:
-            img_display.configure(image=images[0])
-            img_display.update()
+    # if 'layer' option is selected
+    if plot_var.get() == 1:
+        plotters.LayerPlotter("plot", *args, layers).plot()
+    # if 'gradient' option is selected
+    if gradient_var.get() == 1:
+        plotters.GradientPlotter("gradient", *args).plot_gradient()
+    # if 'contour' option is selected
+    if contour_var.get() == 1:
+        plotters.ContourPlotter(*args, contour_height).plot_contour()
+    # if 'composite' option is selected
+    if composite_var.get() == 1:
+        plotters.LayerPlotter("composite", *args, layers).plot()
+    # if 'ground intensity' option is selected
+    if ground_intensity_var.get() == 1:
+        plotters.GradientPlotter("intensity", *args).plot_gradient()
+    # if 'generate world files' option is selected
+    if world_var.get() == 1:
+        world.make_world_file(src, out)
+    # if 'highVeg shaded' option is selected
+    if highVeg_shaded_var.get() == 1:
+        plotters.VegShader(*args).plot_shaded()
+    # if 'print info' option is selected
+    if print_var.get() == 1:
+        printer.format(src)
 
-    else:
-        print("ERROR: please select valid input/ output directory")
+    # get all image files at the output dir and make a list
+    for the_file in Path(out).glob("*.png"):
+        img = Image.open(the_file).resize((preview_size, preview_size))
+        images.append(ImageTk.PhotoImage(img))
+        file_box.insert(END, the_file.name)
+
+    if len(images) != 0:
+        img_display.configure(image=images[0])
+        img_display.update()
 
 
 # set the style for the application
