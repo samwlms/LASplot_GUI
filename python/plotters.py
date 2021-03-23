@@ -45,7 +45,6 @@ class GradientPlotter(WindowSelections):
     def __init__(self, operation, input, output, size, dpi, marker):
         super().__init__(input, output, size, dpi, marker)
         self.operation = operation
-        self.filename = Path(operation / ".png")
         self.num_bands = 40
         self.bands = None
         self.colours = None
@@ -67,10 +66,10 @@ class GradientPlotter(WindowSelections):
             plt.plot(*b, color=c, linestyle="none", marker=self.marker)
 
         # save the image to a given output
-        self.save_png(self.filename)
+        self.save_png(self.operation)
 
         time_output = time.time() - start
-        printer.saved(self.filename, time_output)
+        printer.saved(self.operation, time_output)
         printer.complete()
 
     def upper_limit(self, layer):
