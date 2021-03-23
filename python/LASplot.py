@@ -94,7 +94,7 @@ def change_img(event):
         img_index = file_box.curselection()[0]
         img_display.configure(image=images[img_index])
         img_display.update()
-    except:
+    except:  # this bare except irks me. Fix it
         print("ERROR: no images to select")
 
 
@@ -158,7 +158,8 @@ def handler():
             file_box.insert(END, the_file.name)
 
         if dest_images:
-            img_display.configure(image=images[0]).update()
+            img_display.configure(image=images[0])
+            img_display.update()
 
     else:
         print("ERROR: please select valid input/ output directory")
