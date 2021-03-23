@@ -7,13 +7,14 @@ import numpy as np
 from scipy.spatial.kdtree import KDTree
 import printer
 import time
+from pathlib import Path
 import matplotlib.pyplot as plt
 
 
 class WindowSelections:
     def __init__(self, input, output, size, dpi, marker):
-        self.input = input
-        self.output = output
+        self.input = Path(input)
+        self.output = Path(output)
         self.size = size
         self.dpi = dpi
         self.marker = marker
@@ -32,7 +33,7 @@ class WindowSelections:
         fig = plt.gcf()
         fig.set_size_inches(self.size, self.size)
         fig.savefig(
-            self.output + filename,
+            self.output / filename,
             dpi=self.dpi,
             pad_inches=-1,
             facecolor="black",
@@ -44,7 +45,7 @@ class GradientPlotter(WindowSelections):
     def __init__(self, operation, input, output, size, dpi, marker):
         super().__init__(input, output, size, dpi, marker)
         self.operation = operation
-        self.filename = "/" + operation + ".png"
+        self.filename = Path(operation / ".png")
         self.num_bands = 40
         self.bands = None
         self.colours = None
@@ -185,7 +186,7 @@ class ContourPlotter(WindowSelections):
         self.band_height = band_height / self.las.header.scale[2]
         self.bands_1 = []
         self.bands_2 = []
-        self.filename = "/contour"
+        self.filename = "contour"
 
     def plot_contour(self):
         printer.contour_print()
@@ -254,13 +255,13 @@ class LayerPlotter(WindowSelections):
         # dict containing the names/ colours of various classification
         # layers, where the key maps with the LAS spec classification.
         names_colours = {
-            "1": ["/unclassified.png", "violet"],
-            "2": ["/ground.png", "saddlebrown"],
-            "3": ["/lowVeg.png", "LimeGreen"],
-            "4": ["/mediumVeg.png", "LimeGreen"],
-            "5": ["/highVeg.png", "green"],
-            "6": ["/buildings.png", "White"],
-            "9": ["/water.png", "deepskyblue"],
+            "1": ["unclassified.png", "violet"],
+            "2": ["ground.png", "saddlebrown"],
+            "3": ["lowVeg.png", "LimeGreen"],
+            "4": ["mediumVeg.png", "LimeGreen"],
+            "5": ["highVeg.png", "green"],
+            "6": ["buildings.png", "White"],
+            "9": ["water.png", "deepskyblue"],
         }
 
         for arg in self.plot_args:
@@ -276,7 +277,7 @@ class LayerPlotter(WindowSelections):
                 time_output = time.time() - start
                 printer.saved(val[0], time_output)
         if self.operation == "composite":
-            filename = "/composite"
+            filename = "composite"
             self.save_png(filename)
             time_output = time.time() - start
             printer.saved(filename, time_output)
@@ -338,7 +339,7 @@ class VegShader(WindowSelections):
         self.plot_bands()
 
         time_output = time.time() - start
-        printer.saved("/shaded_veg.png", time_output)
+        printer.saved("shaded_veg.png", time_output)
         printer.complete()
 
     def get_height(self, ground_tree, ground, point):
@@ -420,4 +421,4 @@ class VegShader(WindowSelections):
                 print(e)
 
         # save the image to a given output
-        self.save_png("/shaded_veg.png")
+        self.save_png("shaded_veg.png")
