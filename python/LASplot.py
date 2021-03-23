@@ -120,31 +120,24 @@ def handler():
         # if 'layer' option is selected
         if plot_var.get() == 1:
             plotters.LayerPlotter("plot", *args, layers).plot()
-
         # if 'gradient' option is selected
         if gradient_var.get() == 1:
             plotters.GradientPlotter("gradient", *args).plot_gradient()
-
         # if 'contour' option is selected
         if contour_var.get() == 1:
             plotters.ContourPlotter(*args, contour_height).plot_contour()
-
         # if 'composite' option is selected
         if composite_var.get() == 1:
             plotters.LayerPlotter("composite", *args, layers).plot()
-
         # if 'ground intensity' option is selected
         if ground_intensity_var.get() == 1:
             plotters.GradientPlotter("intensity", *args).plot_gradient()
-
         # if 'generate world files' option is selected
         if world_var.get() == 1:
             world.make_world_file(src, out)
-
         # if 'highVeg shaded' option is selected
         if highVeg_shaded_var.get() == 1:
             plotters.VegShader(*args).plot_shaded()
-
         # if 'print info' option is selected
         if print_var.get() == 1:
             printer.format(src)
@@ -209,7 +202,6 @@ marker_var.set(".")
 # contour settings variables
 contour_height_var = StringVar()
 contour_height_var.set("2")
-
 
 # GIS settings variables
 world_var = IntVar()
@@ -310,7 +302,6 @@ control_frame = LabelFrame(
 )
 control_frame.pack(pady=10, padx=5, fill="both")
 
-
 # CONTROLS
 Checkbutton(
     control_frame,
@@ -318,39 +309,32 @@ Checkbutton(
     variable=plot_var,
     command=plot_checked,
 ).pack(anchor=W)
-
 Checkbutton(
     control_frame,
     text="ground gradient",
     variable=gradient_var,
 ).pack(anchor=W)
-
 Checkbutton(
     control_frame,
     text="ground contour",
     variable=contour_var,
 ).pack(anchor=W)
-
-
 Checkbutton(
     control_frame,
     text="ground intensity",
     variable=ground_intensity_var,
 ).pack(anchor=W)
-
 Checkbutton(
     control_frame,
     text="shaded veg (slow)",
     variable=highVeg_shaded_var,
 ).pack(anchor=W)
-
 Checkbutton(
     control_frame,
     text="composite image",
     variable=composite_var,
     command=plot_checked,
 ).pack(anchor=W)
-
 Checkbutton(
     control_frame,
     text="print file info",
@@ -367,7 +351,6 @@ plot_frame = LabelFrame(
     font=10,
 )
 plot_frame.pack(pady=10, padx=5, fill="both")
-
 
 # CONTROLS
 ground_chk = Checkbutton(
@@ -429,7 +412,6 @@ gis_frame = LabelFrame(
 )
 gis_frame.pack(pady=10, padx=5, fill="both")
 
-
 Checkbutton(
     gis_frame,
     text="generate world file",
@@ -489,7 +471,6 @@ Label(
     contour_frame,
     text="meters",
 ).grid(row=0, column=1, sticky=W)
-
 contour_input = Entry(
     contour_frame,
     textvariable=contour_height_var,
@@ -515,31 +496,26 @@ Label(
     settings_frame,
     text="output DPI",
 ).grid(row=3, column=1, sticky=W)
-
 dpi_input = Entry(
     settings_frame,
     textvariable=dpi_var,
     width=5,
 )
 dpi_input.grid(row=3, column=0, sticky=E, padx=5, pady=5)
-
 Label(
     settings_frame,
     text="output size",
 ).grid(row=4, column=1, sticky=W)
-
 size_input = Entry(
     settings_frame,
     textvariable=size_var,
     width=5,
 )
 size_input.grid(row=4, column=0, sticky=E, padx=5, pady=5)
-
 Label(
     settings_frame,
     text="preview size",
 ).grid(row=5, column=1, sticky=W)
-
 preview_size_input = Entry(
     settings_frame,
     textvariable=preview_size_var,
