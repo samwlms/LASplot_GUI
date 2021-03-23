@@ -5,22 +5,25 @@
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
-import printer, plotters, world, os
+from pathlib import Path
+import printer, plotters, world
 
 
 # allows user to select a las file input
 def choose_source():
-    path = filedialog.askopenfilename(
-        title="Select one or more .LAS files", filetypes=(("las Files", "*.las"),)
+    path = Path(
+        filedialog.askopenfilename(
+            title="Select a LAS file", filetypes=(("las Files", "*.las"),)
+        )
     )
 
-    if path != "":
+    if path.is_file():
         source_var.set(path)
 
 
 # allows user to define desired output for the files
 def choose_dest():
-    destination_var.set(filedialog.askdirectory())
+    destination_var.set(Path(filedialog.askdirectory()))
 
 
 # upon selection of the 'classification view' checkbox,
@@ -101,7 +104,7 @@ def handler():
         src = source_var.get()
         out = destination_var.get()
         size = int(size_var.get())
-        preview_size_int = int(preview_size_var.get())
+        preview_size = int(preview_size_var.get())
         dpi = int(dpi_var.get())
         marker = marker_var.get()
         contour_height = int(contour_height_var.get())
@@ -146,24 +149,16 @@ def handler():
         if print_var.get() == 1:
             printer.format(src)
 
+        dest_images = Path(destination_var.get()).glob("*.png")
+
         # get all image files at the output dir and make a list
-        for the_file in os.listdir(destination_var.get()):
+        for the_file in dest_images:
+            img = Image.open(the_file).resize((preview_size, preview_size))
+            images.append(ImageTk.PhotoImage(img))
+            file_box.insert(END, the_file.name)
 
-            if the_file.endswith("png"):
-                # make a list of 'PIL photoImage' objects
-                img_path = out + "/" + the_file
-                img = Image.open(img_path).resize((preview_size_int, preview_size_int))
-                images.append(ImageTk.PhotoImage(img))
-
-                # insert the image name into the GUI listbox
-                file_box.insert(END, the_file)
-
-        try:
-            # update the GUI image box with an image from the output dir
-            img_display.configure(image=images[0])
-            img_display.update()
-        except:
-            print("ERROR: no images to display in destination dir")
+        if dest_images:
+            img_display.configure(image=images[0]).update()
 
     else:
         print("ERROR: please select valid input/ output directory")
