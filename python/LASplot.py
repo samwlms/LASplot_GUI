@@ -115,7 +115,7 @@ def change_img(event):
         img_index = file_box.curselection()[0]
         img_display.configure(image=images[img_index])
         img_display.update()
-    except Exception as e:  # this bare except irks me. Fix it
+    except Exception as e:
         print("ERROR: no images to select ({})".format(e))
 
 
