@@ -45,7 +45,7 @@ class GradientPlotter(WindowSelections):
     def __init__(self, operation, input, output, size, dpi, marker):
         super().__init__(input, output, size, dpi, marker)
         self.operation = operation
-        self.num_bands = 40
+        self.num_bands = 20
         self.bands = None
         self.colours = None
 
@@ -254,13 +254,13 @@ class LayerPlotter(WindowSelections):
         # dict containing the names/ colours of various classification
         # layers, where the key maps with the LAS spec classification.
         names_colours = {
-            "1": ["unclassified.png", "violet"],
-            "2": ["ground.png", "saddlebrown"],
-            "3": ["lowVeg.png", "LimeGreen"],
-            "4": ["mediumVeg.png", "LimeGreen"],
-            "5": ["highVeg.png", "green"],
-            "6": ["buildings.png", "White"],
-            "9": ["water.png", "deepskyblue"],
+            "1": ["unclassified", "violet"],
+            "2": ["ground", "saddlebrown"],
+            "3": ["lowVeg", "LimeGreen"],
+            "4": ["mediumVeg", "LimeGreen"],
+            "5": ["highVeg", "green"],
+            "6": ["buildings", "White"],
+            "9": ["water", "deepskyblue"],
         }
 
         for arg in self.plot_args:
@@ -316,7 +316,7 @@ class VegShader(WindowSelections):
         self.plot_bands()
 
         time_output = time.time() - start
-        printer.saved("shaded_veg.png", time_output)
+        printer.saved("shaded_veg", time_output)
         printer.complete()
 
     def get_heights(self):
@@ -415,4 +415,4 @@ class VegShader(WindowSelections):
                 print(e)
 
         # save the image to a given output
-        self.save_png("shaded_veg.png")
+        self.save_png("shaded_veg")
