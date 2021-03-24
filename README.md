@@ -40,14 +40,14 @@ Using the layer selection pane, users can generate custom images with various LA
 
 
 ### Shaded vegetation option
-###### *Speed: slow (10 - 15s)*
-LASplot can now generate shaded vegetation imagery. The algorithm will shade high vegetation points on a colour gradient by considering their individual distance from ground. This option takes a little longer to generate images (approx 10 seconds, depending on specified output arguments), but is still quite optimized for a Python approach. Using the inbuilt GUI image generation arguments (DPI + Size), it is possible to generate useful snapshots for analysis at any scale.
+###### *Speed: med-slow (2 - 10s)*
+LASplot can now generate shaded vegetation imagery. The algorithm will shade high vegetation points on a colour gradient by considering their individual distance from ground. This option takes a little longer to generate images (depending on number of veg points / PC compute power), but is still quite optimized for a Python approach. By utilizing the spatial query functionality of [cKDtree](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.cKDTree.html), we can bypass the Python GIL and use all available CPU cores to handle computation. With the inbuilt GUI image generation arguments (DPI + Size), it is possible to generate useful snapshots for analysis at any scale.
 
 ![GUI image](https://github.com/samwlms/LASplot_GUI/blob/main/images/shaded_veg.png)
 
 
 ### Ground layer terrain analysis:
-###### *Speed: fast-med (2 - 4s)*
+###### *Speed: med (2 - 4s)*
 
 _**With the following options, users may visualise both relative and/ or absolute variance in terrain elevation**_
 
@@ -73,7 +73,7 @@ _Represents the elevation changes within a tile that are characterized by distin
 Using the contour function, users may specify a band height (in meters) and break the input file into distinct bands. This allows for analysis of absolute terrain height changes across the tile.
 
 ### Ground intensity analysis:
-###### *Speed: fast-med (2 - 4s)*
+###### *Speed: med (2 - 4s)*
 
 **With the following options, users may visualize the return intensity for point records within a file. This is useful for identifying road features and changes in ground layer terrain makeup**
 

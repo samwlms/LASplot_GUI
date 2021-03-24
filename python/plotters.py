@@ -4,7 +4,7 @@
 
 from laspy.file import File
 import numpy as np
-from scipy.spatial.kdtree import KDTree
+from scipy.spatial import cKDTree
 import printer
 import time
 from pathlib import Path
@@ -302,6 +302,30 @@ class VegShader(WindowSelections):
         printer.shaded_print()
         start = time.time()
 
+        # 2D array with the Z component representing relative height from ground
+        veg_with_height = np.vstack(
+            [
+                self.las.X[self.las.Classification == 5],
+                self.las.Y[self.las.Classification == 5],
+                self.get_heights(),
+            ]
+        ).transpose()
+
+        self.generate_veg_bands(veg_with_height)
+        self.generate_band_colours()
+        self.plot_bands()
+
+        time_output = time.time() - start
+        printer.saved("shaded_veg.png", time_output)
+        printer.complete()
+
+    def get_heights(self):
+        """
+        this function is an order of magnitude faster than the previous implementation :)
+        It processes the nearest neighbor queries as a single batch rather than point-wise
+        calculations (duhhh). This allows the query to run parallel processing using the optional 'workers'
+        kwarg, where '-1' utilizes all avaliable threads.
+        """
         # make some 2D arrays representing high vegetation and ground points
         veg = np.vstack(
             [
@@ -318,39 +342,10 @@ class VegShader(WindowSelections):
             ]
         ).transpose()
 
-        # generate a KD Tree of the ground points
-        ground_tree = KDTree(ground)
-
-        # get the Z scale of the las file for height calculation
         scale = self.las.header.scale[2]
-
-        # 2D array with the Z component representing relative height from ground
-        veg_with_height = np.vstack(
-            [
-                self.las.X[self.las.Classification == 5],
-                self.las.Y[self.las.Classification == 5],
-                [self.get_height(ground_tree, ground, point) * scale for point in veg],
-            ]
-        ).transpose()
-
-        self.generate_veg_bands(veg_with_height)
-        self.generate_band_colours()
-        self.plot_bands()
-
-        time_output = time.time() - start
-        printer.saved("shaded_veg.png", time_output)
-        printer.complete()
-
-    def get_height(self, ground_tree, ground, point):
-        """
-        function that runs a spatial query using the scipy.spatial.kdtree library.
-        The query checks for the closest point of ground classification to any given
-        high vegetation point. The vertical (z) distance between these points is then
-        returned
-        """
-        closest_point = ground[ground_tree.query(point)[1]]
-        distance_from_ground = point[2] - closest_point[2]
-        return distance_from_ground
+        # holy optimizer batman! (workers=-1) = all the threads! GIL be damned
+        points = ground[cKDTree(ground).query(veg, workers=-1)[1]]
+        return (veg[:, 2] - points[:, 2]) * scale
 
     def generate_veg_bands(self, veg_points):
         """
