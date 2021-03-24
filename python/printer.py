@@ -6,81 +6,86 @@ from laspy.file import File
 import laspy
 import numpy as np
 import matplotlib.pyplot as plt
+from colorama import Fore, init
 
 
 def saved(filename, time):
+
+    init()
     string_time = str(round(time, 2)) + "s"
-    print(filename, "saved in", string_time)
+    print(Fore.YELLOW + filename, "saved in", string_time)
 
 
 def plot_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("----------CLASSIFICATION PLOTS-----------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "|||||||||| CLASSIFICATION PLOTS |||||||||||")
+    print("")
 
 
 def contour_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("--------------CONTOUR PLOT---------------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "|||||||||||||| CONTOUR PLOT |||||||||||||||")
+    print("")
 
 
 def composite_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("------------COMPOSITE IMAGERY------------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "|||||||||||| COMPOSITE IMAGERY ||||||||||||")
+    print("")
 
 
 def shaded_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("-----------SHADED VEGETATION-------------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "||||||||||| SHADED VEGETATION |||||||||||||")
+    print("")
 
 
 def contour_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("--------------CONTOUR PLOT---------------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "|||||||||||||| CONTOUR PLOT |||||||||||||||")
+    print("")
 
 
 def gradient_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("-------------GRADIENT PLOT---------------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "||||||||||||| GRADIENT PLOT |||||||||||||||")
+    print("")
 
 
 def intensity_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("-------------INTENSITY PLOT--------------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "||||||||||||| INTENSITY PLOT ||||||||||||||")
+    print("")
 
 
 def info_print():
 
+    init()
     print("")
-    print("-----------------------------------------")
-    print("----------------FILE INFO----------------")
-    print("-----------------------------------------")
+    print(Fore.CYAN + "|||||||||||||||| FILE INFO ||||||||||||||||")
+    print("")
 
 
 def complete():
 
-    print("-----------------------------------------")
-    print("process complete")
+    init()
+    print()
+    print(Fore.GREEN + "process complete")
+    print("")
 
 
 def format(input):
@@ -94,20 +99,23 @@ def format(input):
 
     info_print()
 
-    print("LAS Specification =", header.major_version, ".", header.minor_version)
+    print(
+        Fore.YELLOW + "LAS Specification =",
+        Fore.GREEN + str(header.major_version) + str(header.minor_version),
+    )
     print("")
 
-    print("------------ Point data format: ------------")
+    print(Fore.CYAN + "||||||| Point format: |||||||")
     pointformat = input_file.point_format
     for spec in pointformat:
-        print(spec.name)
+        print(Fore.YELLOW + spec.name)
     print("")
 
-    print("------------ Sample point data: ------------")
-    print(point_records[0])
+    print(Fore.CYAN + "||||||| Sample points: |||||||")
+    print(Fore.YELLOW + str(point_records[0]))
     print("")
 
-    print("------------ Header data: ------------")
+    print(Fore.CYAN + "||||||| Header data: |||||||")
 
     header_specs = (
         "file_signature",
@@ -124,7 +132,6 @@ def format(input):
         "data_format_id",
         "data_record_length",
         "records_count",
-        "point_return_count",
         "scale",
         "offset",
         "max",
@@ -134,24 +141,25 @@ def format(input):
 
     for spec in header_specs:
         try:
-            print(spec, ":", getattr(header, spec))
+            print(Fore.YELLOW + spec, ":", Fore.GREEN + getattr(header, spec))
         except:
-            print(spec, ": value not found")
+            print(Fore.YELLOW + spec, ":", Fore.RED + "value not found")
     print("")
 
-    print("------------ VLR's: ------------")
+    print(Fore.CYAN + "||||||| VLR's: |||||||")
 
     for count, rec in enumerate(header.vlrs):
-        print("~~~ VLR #" + str(count), "~~~")
-        print("Description:", rec.description)
-        print("VLR content:")
-        print(rec.VLR_body)
+        print(Fore.WHITE + "~~~ VLR #" + str(count), "~~~")
+        print(Fore.YELLOW + "Description:")
+        print(Fore.GREEN + rec.description)
+        print(Fore.YELLOW + "VLR content:")
+        print(Fore.GREEN + str(rec.VLR_body))
         print("")
 
-    print("------ EVLR's: ------")
+    print(Fore.CYAN + "|||||| EVLR's: ||||||")
 
     for rec in header.evlrs:
-        print(rec)
+        print(Fore.YELLOW + rec)
     print("")
 
     complete()
