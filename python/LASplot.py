@@ -88,6 +88,7 @@ def valid_inputs():
             ground_intensity_var.get() == 1,
             world_var.get() == 1,
             highVeg_shaded_var.get() == 1,
+            print_var.get() == 1,
             ground_var.get() == 1,
             water_var.get() == 1,
             lowVeg_var.get() == 1,
@@ -353,7 +354,7 @@ Checkbutton(
 ).pack(anchor=W)
 Checkbutton(
     control_frame,
-    text="shaded veg (slow)",
+    text="shaded veg",
     variable=highVeg_shaded_var,
 ).pack(anchor=W)
 Checkbutton(
