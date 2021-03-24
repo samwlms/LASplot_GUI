@@ -354,7 +354,7 @@ Checkbutton(
 ).pack(anchor=W)
 Checkbutton(
     control_frame,
-    text="shaded veg (slow)",
+    text="shaded veg",
     variable=highVeg_shaded_var,
 ).pack(anchor=W)
 Checkbutton(
