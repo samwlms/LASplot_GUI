@@ -2,7 +2,13 @@
 # Contact: Swilliams9@uon.edu.au
 # Project is open for use/ collaboration by all!
 
-import printer, os
+import os
+
+# this will vary depending on launch point (cli.py/ LASplot.py)
+try:
+    from python import printer
+except ModuleNotFoundError:
+    import printer
 
 
 def make_world_file(source, destination):

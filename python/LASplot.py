@@ -6,8 +6,14 @@ from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
 from pathlib import Path
-import printer, plotters, world
 from tempfile import TemporaryDirectory
+
+
+# this will vary depending on launch point (cli.py/ LASplot.py)
+try:
+    from python import printer, plotters, world
+except ModuleNotFoundError:
+    import printer, plotters, world
 
 # allows user to select a las file input
 def choose_source():
@@ -577,8 +583,12 @@ file_box.pack(fill=X)
 file_box.bind("<<ListboxSelect>>", change_img)
 
 
-if __name__ == "__main__":
+def main():
     # set the style for the main window
     set_style(root)
     # run main window
     root.mainloop()
+
+
+if __name__ == "__main__":
+    main()

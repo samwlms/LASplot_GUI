@@ -5,10 +5,15 @@
 from laspy.file import File
 import numpy as np
 from scipy.spatial import cKDTree
-import printer
 import time
 from pathlib import Path
 import matplotlib.pyplot as plt
+
+# this will vary depending on launch point (cli.py/ LASplot.py)
+try:
+    from python import printer
+except ModuleNotFoundError:
+    import printer
 
 
 class WindowSelections:
