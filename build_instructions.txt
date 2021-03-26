@@ -1,5 +1,0 @@
-To build LASplot into an executable, run the following command:
-
-pyinstaller cli.py --name LASplot --paths env\Lib\site-packages --add-data 'env/Lib/site-packages/matplotlib/mpl-data/matplotlibrc;matplotlib/mpl-data'
-
-note: you will have to 'pip install pyinstaller' first
